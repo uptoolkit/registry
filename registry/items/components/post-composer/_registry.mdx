@@ -1,0 +1,63 @@
+---
+name: post-composer
+type: registry:ui
+title: Post Composer
+description: Composer that emits an ActivityPub Create activity with audience targeting.
+registryDependencies:
+  - button
+  - card
+  - dropdown-menu
+  - input
+  - separator
+  - textarea
+localRegistryDependencies:
+  - activitypub
+  - actor-avatar
+files:
+  - path: post-composer.tsx
+    type: registry:ui
+---
+
+Produces a complete `Create` activity wrapping a `Note`, ready to `POST` to the author's outbox.
+
+```tsx
+import { PostComposer } from "@/components/ui/post-composer";
+
+<PostComposer author={viewer} onSubmit={(activity) => postToOutbox(viewer, activity)} />
+```
+
+### Audience
+
+The visibility selector writes real `to` and `cc` addressing rather than a private field:
+
+| Choice          | `to`             | `cc`                        |
+| --------------- | ---------------- | --------------------------- |
+| Public          | Public           | followers, mentions         |
+| Unlisted        | followers        | Public, mentions            |
+| Followers       | followers        | mentions                    |
+| Mentioned only  | mentions         | —                           |
+
+Restrict or hide the choices:
+
+```tsx
+<PostComposer author={viewer} visibilityOptions={["public", "followers"]} />
+<PostComposer author={viewer} visibilityOptions={false} defaultVisibility="followers" />
+```
+
+### Tags and content warnings
+
+`@user@host` mentions and `#hashtags` are extracted into the object's `tag` array as `Mention` and
+`Hashtag` entries, and mentions are added to the audience automatically. The warning toggle sets
+`summary` plus `sensitive: true`, which is what renderers use to collapse a post.
+
+### Replies
+
+Pass `inReplyTo` to set the object's `inReplyTo` and switch the placeholder to reply wording:
+
+```tsx
+<PostComposer author={viewer} inReplyTo={note} submitLabel="Reply" maxLength={500} />
+```
+
+The character counter is grapheme-aware and announces via `aria-live`. `onSubmit` may return a
+promise; the submit button stays disabled while it settles, and the content clears on success unless
+you set `preserveOnSubmit`.

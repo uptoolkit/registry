@@ -1,0 +1,52 @@
+---
+name: settings-page
+type: registry:page
+title: Settings Page
+description: Account settings page with section nav, profile, notification, and danger-zone forms.
+registryDependencies:
+  - avatar
+  - badge
+  - breadcrumb
+  - button
+  - card
+  - input
+  - label
+  - separator
+  - textarea
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/settings/page.tsx
+  - path: settings-panels.tsx
+    type: registry:component
+  - path: settings-data.ts
+    type: registry:lib
+---
+
+Three settings panels behind a section nav: the public profile form, email preferences, and a
+danger zone that makes you type your handle before the delete button turns on.
+
+```sh
+npx shadcn@latest add @_cn/settings-page
+```
+
+Installs `app/settings/page.tsx` plus the `SettingsPanels` client component and the `settings-data`
+defaults.
+
+### Saving
+
+`ProfilePanel` submits a real `<form>`, so swapping the local handler for a server action is a
+one-line change and the form keeps working without JavaScript:
+
+```tsx
+<form action={updateProfile}>{/* same fields */}</form>
+```
+
+Notification toggles are `role="switch"` buttons with `aria-checked`, which keeps them announced
+correctly without pulling in a switch primitive.
+
+### Section nav
+
+`settingsSections` in `settings-data.ts` drives both the nav and the heading above each panel, so
+adding a section means adding one entry and one branch in `SettingsPanels`. For a nav that survives
+a refresh, move `activeSection` into a search param instead of `useState`.

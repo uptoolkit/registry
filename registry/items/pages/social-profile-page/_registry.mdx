@@ -1,0 +1,53 @@
+---
+name: social-profile-page
+type: registry:page
+title: Social Profile Page
+description: Actor profile page with header, timeline, about panel, and followers grid.
+registryDependencies:
+  - card
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-avatar
+  - json-ld
+  - profile-header
+  - social-feed
+  - actor-grid
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/profile/page.tsx
+---
+
+An actor's profile: header with cover and stats, their timeline, mutual contacts, and a followers
+grid. Every block reads the same `ActivityPubActor`, so there is one source of truth on the page.
+
+```sh
+npx shadcn@latest add @_cn/social-profile-page
+```
+
+Installs to `app/profile/page.tsx`. Move it to a dynamic segment such as
+`app/[handle]/page.tsx` and resolve the actor from the route:
+
+```tsx
+import { buildWebFingerUrl, parseHandle } from "@/lib/activitypub";
+
+export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  const actor = await resolveActorByHandle(handle); // WebFinger, then fetch the actor document
+  const outbox = await fetchOutbox(actor);
+
+  // ...pass actor and outbox into ProfileHeader, SocialFeed, and ActorGrid
+}
+```
+
+`parseHandle` and `buildWebFingerUrl` from [`activitypub`](/utilities/activitypub) cover the
+discovery half of that lookup.
+
+### Structured data
+
+The page emits one Schema.org `ProfilePage` whose `mainEntity` is the actor and whose `hasPart` lists
+the visible posts. The header's own JSON-LD is switched off with `includeJsonLd={false}`, and the
+followers grid does the same, so the page produces a single profile node instead of three
+overlapping ones.

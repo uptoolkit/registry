@@ -1,0 +1,55 @@
+---
+name: follow-button
+type: registry:ui
+title: Follow Button
+description: Follow control that emits ActivityPub Follow and Undo activities.
+registryDependencies:
+  - button
+localRegistryDependencies:
+  - activitypub
+files:
+  - path: follow-button.tsx
+    type: registry:ui
+---
+
+Emits real activities rather than calling an opaque callback: `onFollow` receives a `Follow` and
+`onUnfollow` receives an `Undo` wrapping the exact `Follow` that was sent, which is what an
+ActivityPub server needs to retract the relationship.
+
+```tsx
+import { FollowButton } from "@/components/ui/follow-button";
+
+<FollowButton
+  actor={actor}
+  viewer={viewer}
+  onFollow={(activity) => postToOutbox(viewer, activity)}
+  onUnfollow={(activity) => postToOutbox(viewer, activity)}
+/>
+```
+
+### Optimistic state
+
+The label changes immediately. Return `false` from either handler to roll it back:
+
+```tsx
+<FollowButton
+  actor={actor}
+  viewer={viewer}
+  onFollow={async (activity) => {
+    const response = await postToOutbox(viewer, activity);
+    return response.ok;
+  }}
+/>
+```
+
+### Follow requests
+
+Actors with `manuallyApprovesFollowers` go to `requested` instead of `following`, matching the
+server's pending `Accept`. Once the `Accept` arrives, drive the button as controlled:
+
+```tsx
+<FollowButton actor={actor} viewer={viewer} state={relationship} onStateChange={setRelationship} />
+```
+
+Hovering or focusing a followed actor swaps the label to "Unfollow"; pass
+`showUnfollowOnHover={false}` to keep it static. `aria-pressed` always reflects the relationship.

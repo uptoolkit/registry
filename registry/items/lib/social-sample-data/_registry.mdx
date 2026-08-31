@@ -1,0 +1,40 @@
+---
+name: social-sample-data
+type: registry:lib
+title: Social Sample Data
+description: Sample ActivityPub actors, notes, and inbox activities for previewing social UI.
+localRegistryDependencies:
+  - activitypub
+files:
+  - path: social-sample-data.ts
+    type: registry:lib
+---
+
+Fixtures shaped exactly like real ActivityPub responses, so the blocks and pages in this registry
+render standalone before you have a server to talk to. The social blocks default their data props to
+these values; swap them for your fetch and delete the file.
+
+```ts
+import {
+  SAMPLE_NOW,
+  sampleFeed, // OrderedCollection of Create and Announce activities
+  sampleInbox, // OrderedCollection of Like, EmojiReact, Announce, Follow, Create
+  sampleFollowers, // Actor[]
+  sampleSuggestions, // Actor[]
+  sampleTimeline, // Object[]
+  samplePost, // Note with attachments, tags, location, and replies
+  sampleReplies, // Object[], including one nested reply
+  sampleViewer, // the signed-in Actor
+  sampleAuthor, // a remote Actor on another domain
+  sampleCounts,
+} from "@/lib/social-sample-data";
+```
+
+Timestamps derive from the fixed `SAMPLE_NOW` clock rather than `Date.now()`, so relative times are
+stable between server and client renders. Pass it as the `now` prop of any component that formats a
+timestamp.
+
+The set deliberately covers the awkward cases: a remote actor on a second domain, an
+`Organization` actor, an actor with `manuallyApprovesFollowers`, a sensitive post behind a content
+warning, an `Article`, an `Announce` boost, a post with an audio attachment and a `Mention`, and
+verified `rel="me"` profile fields.

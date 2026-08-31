@@ -1,0 +1,35 @@
+---
+name: json-ld
+type: registry:component
+title: JSON-LD
+description: Renders a safely serialized application/ld+json script tag.
+files:
+  - path: json-ld.tsx
+    type: registry:component
+---
+
+Emits structured data as an `application/ld+json` script tag. Works in a server component, a client
+component, or anywhere else you can render an element.
+
+```tsx
+import { JsonLd } from "@/components/json-ld";
+
+<JsonLd data={{ "@context": "https://schema.org", "@type": "Person", name: "Ada Okoye" }} />
+```
+
+Pass an array to emit several nodes at once. `null`, `undefined`, and empty arrays render nothing, so
+you can hand it optional data without guarding the call site.
+
+### Escaping
+
+`JSON.stringify` alone is not safe to interpolate into HTML. `serializeJsonLd` escapes `<`, `>`, and
+`&` so a value containing `</script>` cannot terminate the tag early, and escapes U+2028 / U+2029,
+which are legal in JSON but not inside a JavaScript string literal.
+
+```tsx
+serializeJsonLd({ text: "</script><script>alert(1)</script>" });
+// {"text":"</script><script>alert(1)</script>"}
+```
+
+Pass `space` to pretty-print while debugging, and `id` if your framework needs to dedupe or replace
+the tag between navigations.

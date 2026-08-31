@@ -1,0 +1,57 @@
+---
+name: actor-card
+type: registry:ui
+title: Actor Card
+description: Profile summary card for an ActivityPub actor with Schema.org Person markup.
+registryDependencies:
+  - button
+  - card
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - actor-avatar
+  - follow-button
+  - json-ld
+files:
+  - path: actor-card.tsx
+    type: registry:ui
+---
+
+Profile summary for an ActivityPub actor: identity, bio, counts, profile fields, and a follow
+control. Use it in follower lists, suggestion rails, and search results.
+
+```tsx
+import { ActorCard } from "@/components/ui/actor-card";
+
+<ActorCard
+  actor={actor}
+  viewer={viewer}
+  counts={{ posts: 1204, followers: 18940, following: 342 }}
+  showFields
+  onMessage={(actor) => openThread(actor)}
+/>
+```
+
+### Variants
+
+`card` stacks avatar, identity, and actions vertically. `row` is a compact list item with the follow
+button trailing — the right shape for a sidebar or a long list.
+
+```tsx
+<ActorCard actor={actor} variant="row" />
+```
+
+### Verification
+
+`showFields` renders the actor's `attachment` PropertyValue rows. Fields with `verifiedAt` set — how
+Mastodon marks a confirmed `rel="me"` link — get a link icon and a verified accent, and the avatar
+picks up a check badge.
+
+### Structured data
+
+The card emits `Person` or `Organization` microdata depending on the actor's `type`, including the
+WebFinger handle as `identifier`. Add `includeJsonLd` for a JSON-LD script; leave it off when the
+card is inside a list that already emits an `ItemList`, to avoid duplicate nodes.
+
+Follow state is controlled or uncontrolled, forwarding to
+[`follow-button`](/components/follow-button) — pass `hideFollow` to drop the control entirely.

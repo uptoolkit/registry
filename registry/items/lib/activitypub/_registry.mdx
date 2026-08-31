@@ -1,0 +1,88 @@
+---
+name: activitypub
+type: registry:lib
+title: ActivityPub
+description: ActivityStreams 2.0 types and helpers for building federated social features.
+files:
+  - path: activitypub.ts
+    type: registry:lib
+---
+
+The data contract every other social item in this registry reads. It models the
+[ActivityStreams 2.0](https://www.w3.org/TR/activitystreams-vocabulary/) vocabulary that
+[ActivityPub](https://www.w3.org/TR/activitypub/) servers actually serve, so objects you fetch from
+an `outbox` or `inbox` can be handed straight to the components with no adapter layer.
+
+No dependencies, no runtime schema validation, no network calls.
+
+### Types
+
+`ActivityPubActor`, `ActivityPubObject`, `ActivityPubActivity`, `ActivityPubCollection`,
+`ActivityPubDocument`, `ActivityPubTag`, `ActivityPubPropertyValue`, and `ActivityPubPlace`.
+
+### Identity
+
+```ts
+import { buildWebFingerUrl, getActorAcctUri, getActorHandle } from "@/lib/activitypub";
+
+getActorHandle(actor); // "@mira@fediverse.example"
+getActorAcctUri(actor); // "acct:mira@fediverse.example"
+buildWebFingerUrl("@mira@fediverse.example");
+// "https://fediverse.example/.well-known/webfinger?resource=acct%3Amira%40fediverse.example"
+```
+
+### Audience and visibility
+
+Mastodon-style visibility is not a field in ActivityStreams: it is derived from `to` and `cc`.
+`getVisibility` reads it, `buildAudience` writes it.
+
+```ts
+import { buildAudience, getVisibility } from "@/lib/activitypub";
+
+getVisibility(note); // { visibility: "public" | "unlisted" | "followers" | "direct" }
+buildAudience({ visibility: "followers", actor, mentions: [otherActor.id] });
+// { to: ["https://social.example/users/ada/followers"], cc: ["https://..."] }
+```
+
+### Building activities
+
+Each helper returns a complete activity, ready to `POST` to the actor's outbox.
+
+```ts
+import {
+  createAnnounceActivity,
+  createFollowActivity,
+  createLikeActivity,
+  createNoteActivity,
+  createUndoActivity,
+} from "@/lib/activitypub";
+
+const create = createNoteActivity({ actor, content: "Hello, fediverse.", visibility: "public" });
+const like = createLikeActivity({ actor, object: note });
+const react = createLikeActivity({ actor, object: note, content: "\u{1F602}" }); // EmojiReact
+const boost = createAnnounceActivity({ actor, object: note });
+const follow = createFollowActivity({ actor, object: otherActor });
+const undo = createUndoActivity({ actor, activity: like });
+```
+
+### Reading
+
+`getCollectionItems` and `getCollectionCount` normalise `items` / `orderedItems` / `totalItems`.
+`getActivityObject` unwraps `Create` and `Announce`. `toPlainText` strips the HTML that federated
+`content` arrives as, and `getObjectParagraphs` splits it into renderable paragraphs.
+
+### Formatting
+
+`formatPublishedTime`, `formatPublishedDate`, and `formatCompactNumber` default to the `en` locale
+rather than the host locale, because `Intl` with an implicit locale resolves differently on a server
+and in a visitor's browser and surfaces as a hydration mismatch. Pass `locale` to opt in to
+something else — the same value on both sides.
+
+```ts
+formatPublishedTime(note.published, { now: renderedAt, locale: "fr" }); // "il y a 3 heures"
+formatPublishedDate(actor.published, { locale: "fr" }); // "juillet 2019"
+formatCompactNumber(18_940); // "19K"
+```
+
+> Pass a fixed `now` when rendering on the server for the same reason. A relative timestamp computed
+> from `Date.now()` on both sides of a render will not agree.

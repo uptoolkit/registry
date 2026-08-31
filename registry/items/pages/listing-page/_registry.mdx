@@ -1,0 +1,58 @@
+---
+name: listing-page
+type: registry:page
+title: Listing Page
+description: Filterable listing page with search, facets, sorting, and pagination.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - input
+  - label
+  - separator
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/listings/page.tsx
+  - path: listing-browser.tsx
+    type: registry:component
+  - path: listing-data.ts
+    type: registry:lib
+---
+
+A results page split the way most listing pages want to be split: the route stays a server
+component and only the interactive shell is a client component.
+
+```sh
+npx shadcn@latest add @_cn/listing-page
+```
+
+Installs `app/listings/page.tsx` plus the `ListingBrowser` client component and the `listing-data`
+helpers.
+
+### Wiring it to real data
+
+`page.tsx` passes an array of `Listing` records down; everything else is derived. Fetch in the
+server component and the client shell keeps working unchanged:
+
+```tsx
+import { ListingBrowser } from "@/components/listing-browser";
+
+export default async function Page() {
+  const listings = await db.listing.findMany({ where: { published: true } });
+
+  return <ListingBrowser listings={listings} pageSize={12} />;
+}
+```
+
+### Facets
+
+`getListingFacets` derives the facet values and their counts from the listings themselves, so a new
+category shows up in the sidebar without a second source of truth. Filtering, sorting, and price
+formatting live in `listing-data.ts` as pure functions, which keeps them testable and lets you move
+any of them server-side once the result set outgrows the client.
+
+### Pagination
+
+Paging is clamped rather than reset: narrowing the filters while on page 3 lands you on the last
+page that still has results instead of an empty one.

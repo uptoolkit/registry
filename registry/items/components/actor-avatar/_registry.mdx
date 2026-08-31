@@ -1,0 +1,45 @@
+---
+name: actor-avatar
+type: registry:ui
+title: Actor Avatar
+description: Avatar for an ActivityPub actor with initials fallback and presence badge.
+registryDependencies:
+  - avatar
+localRegistryDependencies:
+  - activitypub
+files:
+  - path: actor-avatar.tsx
+    type: registry:ui
+---
+
+Takes a whole `ActivityPubActor` instead of a URL and a name, so it reads the actor's `icon` for the
+image and falls back to initials from `name` or `preferredUsername`.
+
+```tsx
+import { ActorAvatar, ActorAvatarGroup } from "@/components/ui/actor-avatar";
+
+<ActorAvatar actor={actor} size="lg" presence="online" />
+<ActorAvatar actor={actor} verified />
+<ActorAvatar actor={actor} showLock /> {/* when manuallyApprovesFollowers */}
+```
+
+### Badges
+
+One badge renders at a time, in priority order: `verified`, then `showLock` (only when the actor sets
+`manuallyApprovesFollowers`), then `presence`. Pass `presence="offline"` — the default — for no dot.
+
+### Groups
+
+`ActorAvatarGroup` overlaps avatars and collapses the rest into a `+n` chip. Pass `total` when the
+real participant count is larger than the actors you were able to load, which is the normal case for
+a paginated `likes` or `followers` collection.
+
+```tsx
+<ActorAvatarGroup actors={followers} total={collection.totalItems} max={5} />
+```
+
+### Accessibility
+
+The image `alt` is intentionally empty and the display name plus handle go on the root's
+`aria-label`, so a screen reader announces the actor once rather than twice. The root also carries
+`itemProp="image"`, so it slots into a parent Schema.org `Person` scope without extra markup.

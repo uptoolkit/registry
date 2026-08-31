@@ -1,0 +1,69 @@
+---
+name: social-feed
+type: registry:block
+title: Social Feed
+description: Timeline block that renders an ActivityPub OrderedCollection with a composer.
+registryDependencies:
+  - button
+  - separator
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - json-ld
+  - post-card
+  - post-composer
+  - comment-thread
+files:
+  - path: social-feed.tsx
+    type: registry:block
+---
+
+The timeline. Hand it an `OrderedCollection` page from an `inbox` or `outbox` and it renders each
+activity's object, keeping boost attribution intact.
+
+```tsx
+import { SocialFeed } from "@/components/social-feed";
+
+const collection = await fetchInbox(viewer);
+
+<SocialFeed
+  viewer={viewer}
+  collection={collection}
+  showComments
+  onPublish={(activity) => postToOutbox(viewer, activity)}
+  onLoadMore={(next) => fetchPage(next)}
+/>
+```
+
+`Create` and `Announce` activities both render; anything without a resolvable object is skipped
+rather than rendered as an empty card.
+
+### Publishing
+
+Posts composed in the feed are prepended immediately and kept until you refetch, so the timeline does
+not appear to swallow a new post while the request is in flight. `onPublish` receives the same
+`Create` activity the composer built.
+
+### Pagination
+
+When the collection has a `next` URL, a "Load older posts" button appears and passes that URL to
+`onLoadMore`. Merge the page into your collection state and pass it back down.
+
+### Interactions
+
+`onActivity` receives every activity any post emits — `Like`, `EmojiReact`, `Announce`, and the
+`Undo` for each — so a single handler can deliver them all:
+
+```tsx
+<SocialFeed viewer={viewer} onActivity={(activity) => postToOutbox(viewer, activity)} />
+```
+
+### Structured data
+
+The block emits one Schema.org `CollectionPage` wrapping an `ItemList` of postings, so the timeline
+is described once rather than per card.
+
+Without a `collection` the block renders
+[`social-sample-data`](/utilities/social-sample-data) so it works the moment it is installed. Pass
+`hideComposer` for a public timeline and a fixed `now` when rendering on the server.

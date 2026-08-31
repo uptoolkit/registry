@@ -1,0 +1,48 @@
+---
+name: schema-org
+type: registry:lib
+title: Schema.org JSON-LD
+description: Maps ActivityPub actors, objects, and activities to Schema.org JSON-LD.
+localRegistryDependencies:
+  - activitypub
+files:
+  - path: schema-org.ts
+    type: registry:lib
+---
+
+ActivityPub gets your content to other servers; [Schema.org](https://schema.org) gets it into search
+results and AI answers. Both are JSON-LD, so the same source object projects into either shape
+without a second source of truth.
+
+Every function is pure, takes an ActivityPub document, and returns a plain JSON-LD node. `undefined`,
+`null`, and empty arrays are dropped, so output stays small enough to inline.
+
+| ActivityPub                | Schema.org                                     |
+| -------------------------- | ---------------------------------------------- |
+| `Person`                   | `Person`                                       |
+| `Group`, `Organization`     | `Organization`                                  |
+| `Note`                     | `SocialMediaPosting`                            |
+| `Article`                  | `BlogPosting`                                   |
+| reply `Note`               | `Comment` with `parentItem`                     |
+| actor profile              | `ProfilePage` with `mainEntity`                 |
+| `OrderedCollection`        | `CollectionPage` wrapping an `ItemList`         |
+| `Like`, `Announce`, `Follow` | `LikeAction`, `ShareAction`, `FollowAction`    |
+
+```tsx
+import { JsonLd } from "@/components/json-ld";
+import { toProfilePageJsonLd, toSocialMediaPostingJsonLd } from "@/lib/schema-org";
+
+<JsonLd data={toSocialMediaPostingJsonLd(note, { includeComments: true })} />
+<JsonLd data={toProfilePageJsonLd(actor, { counts: { followers: 3187 }, posts })} />
+```
+
+Counts become `interactionStatistic` entries with the right `InteractionCounter` action type, which
+is what Google reads for social engagement signals:
+
+```ts
+toInteractionStatisticJsonLd({ likes: 214, shares: 38, replies: 12, followers: 3187 });
+```
+
+Set `withContext: false` on any call to omit `@context` when nesting a node inside a larger graph.
+`toPersonJsonLd` emits the WebFinger `acct:` URI as `identifier`, so a Schema.org consumer can join
+the node back to the fediverse identity.

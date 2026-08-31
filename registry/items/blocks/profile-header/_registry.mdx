@@ -1,0 +1,70 @@
+---
+name: profile-header
+type: registry:block
+title: Profile Header
+description: Cover, identity, stats, and tabs header with Schema.org ProfilePage markup.
+registryDependencies:
+  - badge
+  - button
+  - separator
+  - tabs
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-avatar
+  - follow-button
+  - json-ld
+files:
+  - path: profile-header.tsx
+    type: registry:block
+---
+
+The top of a profile page: cover art, avatar, identity, bio, counts, follow and message actions, and
+a tab strip.
+
+```tsx
+import { ProfileHeader } from "@/components/profile-header";
+
+<ProfileHeader
+  actor={actor}
+  viewer={viewer}
+  counts={{ posts: 1204, followers: 18940, following: 342 }}
+  onFollow={(activity) => postToOutbox(viewer, activity)}
+/>
+```
+
+Everything is read from the actor document: cover from `image`, avatar from `icon`, bio from
+`summary`, join date from `published`, and the About panel from `attachment` PropertyValue fields
+including `verifiedAt` link verification. Actors with no `image` get a gradient rather than a gap.
+
+### Tabs
+
+Tabs are data. Pass counts for badges and `content` to render a panel; the `about` tab falls back to
+the actor's profile fields when you leave its content empty.
+
+```tsx
+<ProfileHeader
+  actor={actor}
+  tabs={[
+    { value: "posts", label: "Posts", count: 1204, content: <Timeline actor={actor} /> },
+    { value: "followers", label: "Followers", count: 18940, content: <Followers actor={actor} /> },
+    { value: "about", label: "About" },
+  ]}
+/>
+```
+
+Pass `tabs={[]}` to render the header alone, which is what you want when the page owns its own
+navigation.
+
+### Viewer state
+
+When `viewer.id` matches the actor, the follow and message actions are replaced with "Edit profile".
+Actors with `manuallyApprovesFollowers` show an "Approves" badge, so a follow request is not a
+surprise.
+
+### Structured data
+
+Emits a Schema.org `ProfilePage` whose `mainEntity` is the actor, plus matching microdata inline. Set
+`includeJsonLd={false}` when the page already emits its own `ProfilePage` node — as
+[`social-profile-page`](/pages/social-profile-page) does — to avoid duplicates.

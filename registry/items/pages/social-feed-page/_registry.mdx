@@ -1,0 +1,59 @@
+---
+name: social-feed-page
+type: registry:page
+title: Social Feed Page
+description: Three column social home page composed from feed, suggestions, and notifications.
+registryDependencies:
+  - card
+  - separator
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-avatar
+  - json-ld
+  - social-feed
+  - actor-grid
+  - notifications-panel
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/feed/page.tsx
+---
+
+The social home page, assembled from the blocks in this registry: shortcuts and contacts on the left,
+the timeline in the middle, notifications and suggestions on the right. Columns collapse at `lg` and
+`xl`, leaving the timeline alone on small screens.
+
+```sh
+npx shadcn@latest add @_cn/social-feed-page
+```
+
+Installs to `app/feed/page.tsx` along with every block, component, and helper it uses.
+
+### Wiring it up
+
+The page is a server component; the interactive blocks inside it are client components. Replace the
+sample fixtures with your own fetches and pass the results down — nothing else needs to change:
+
+```tsx
+export default async function Page() {
+  const viewer = await getSignedInActor();
+  const [feed, inbox, contacts, suggestions] = await Promise.all([
+    fetchInbox(viewer),
+    fetchNotifications(viewer),
+    fetchFollowing(viewer),
+    fetchSuggestions(viewer),
+  ]);
+
+  // ...pass each into SocialFeed, NotificationsPanel, and ActorGrid
+}
+```
+
+Once the data is real, drop the `now={SAMPLE_NOW}` props so timestamps come from the clock, and
+delete [`social-sample-data`](/utilities/social-sample-data).
+
+### Structured data
+
+The page emits a Schema.org `Person` node for the signed-in actor, and the feed inside emits its own
+`CollectionPage`. Each post additionally carries `SocialMediaPosting` microdata.

@@ -1,0 +1,81 @@
+---
+name: wall-feed
+type: registry:block
+title: Wall Feed
+description: "Activity feed for a profile wall: posts, boosts, reactions, follows, and photo albums in one grouped stream."
+registryDependencies:
+  - badge
+  - button
+  - card
+  - separator
+  - tabs
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-avatar
+  - json-ld
+  - post-card
+  - post-composer
+  - comment-thread
+files:
+  - path: wall-feed.tsx
+    type: registry:block
+  - path: wall-activities.ts
+    type: registry:lib
+---
+
+A wall is wider than a timeline. Alongside `Create` and `Announce` it carries the small signals a
+plain feed throws away — reactions, follows, album additions, profile changes, group joins — and
+this block renders all of them in one stream.
+
+```tsx
+import { WallFeed } from "@/components/wall-feed";
+
+const outbox = await fetchOutbox(owner);
+
+<WallFeed
+  owner={owner}
+  viewer={viewer}
+  collection={outbox}
+  showComments
+  onPublish={(activity) => postToOutbox(viewer, activity)}
+  onLoadMore={(next) => fetchPage(next)}
+/>
+```
+
+### Two row shapes
+
+`Create` and `Announce` render as full [`post-card`](/components/post-card) cards with reactions and
+an optional comment thread. Everything else collapses to a single attributed line with an avatar, a
+verb, and a timestamp — the same visual language as
+[`notifications-panel`](/blocks/notifications-panel), so the two read as one system. An `Add` of a
+photo album additionally renders a thumbnail strip.
+
+### Owner posts and visitor posts
+
+A post counts as written *on* the wall when it addresses the owner in `cc` or `audience` and comes
+from someone else. Those get a "wrote on X's wall" ribbon above the card, and the **Wall posts**
+filter narrows to exactly that set. No extra field is needed — the addressing already says it.
+
+### Filters and grouping
+
+The filter row counts each bucket up front and disables the empty ones, so you never tab into a
+blank list. Entries are then bucketed into `Today`, `Yesterday`, and month headings. Both the
+buckets and the relative timestamps are computed from the `now` prop rather than the wall clock, so
+a server render and its hydration agree.
+
+### Publishing and pagination
+
+Composed posts are prepended immediately and kept until you refetch, so the wall never appears to
+swallow a post in flight. When the collection has a `next` URL, a "Load earlier activity" button
+passes it to `onLoadMore`.
+
+### Structured data
+
+The block emits one Schema.org `CollectionPage` wrapping an `ItemList` of postings. Only real posts
+go in it — a "liked a post" row is not itself a posting, so it is left out rather than padding the
+list.
+
+Without a `collection` the block renders its own `wall-activities` fixtures, which cover every
+activity type it knows how to draw.

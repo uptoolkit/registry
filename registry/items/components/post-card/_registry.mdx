@@ -1,0 +1,75 @@
+---
+name: post-card
+type: registry:ui
+title: Post Card
+description: Renders an ActivityPub Note or Article with Schema.org SocialMediaPosting markup.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - separator
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - actor-avatar
+  - json-ld
+  - reaction-bar
+files:
+  - path: post-card.tsx
+    type: registry:ui
+---
+
+Renders any ActivityPub object as a social post: author identity, visibility, content warning,
+attachment grid, hashtags, and the reaction bar.
+
+```tsx
+import { PostCard } from "@/components/ui/post-card";
+
+<PostCard object={note} viewer={viewer} now={renderedAt} />
+```
+
+### Boosts
+
+Pass the wrapping activity. An `Announce` renders the "boosted" attribution above the post while the
+body stays attributed to the original author.
+
+```tsx
+<PostCard object={getActivityObject(activity)} activity={activity} viewer={viewer} />
+```
+
+### Structured data
+
+Schema.org microdata is always in the markup — `SocialMediaPosting` on the root, with `author`,
+`datePublished`, `articleBody`, `image`, and `keywords` on the nodes inside. Add `includeJsonLd` to
+also emit a JSON-LD script, which is the form Google prefers:
+
+```tsx
+<PostCard object={note} includeJsonLd />
+```
+
+### Content rendering
+
+Federated `content` is HTML from a server you do not control, so the default renderer converts it to
+plain text and linkifies hashtags and mentions from the object's `tag` array. To render HTML, pass
+your own renderer and sanitize it yourself:
+
+```tsx
+<PostCard
+  object={note}
+  renderContent={(object) => (
+    <div dangerouslySetInnerHTML={{ __html: sanitize(object.content ?? "") }} />
+  )}
+/>
+```
+
+### Content warnings
+
+When `sensitive` is set and `summary` is present, the body and attachments stay collapsed behind the
+warning until the reader expands it.
+
+### Composition
+
+`children` render inside the footer under the reaction bar — the place for a comment thread. Pass
+`hideActions` for a read-only card, and a fixed `now` when rendering on the server so relative
+timestamps do not shift at hydration. Dates and counts format in `en` by default; pass `locale` —
+the same value on server and client — for anything else.

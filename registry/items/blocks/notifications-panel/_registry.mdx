@@ -1,0 +1,60 @@
+---
+name: notifications-panel
+type: registry:block
+title: Notifications Panel
+description: Grouped inbox panel for ActivityPub Like, Announce, Follow, and reply activities.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - scroll-area
+  - tabs
+localRegistryDependencies:
+  - activitypub
+  - social-sample-data
+  - actor-avatar
+files:
+  - path: notifications-panel.tsx
+    type: registry:block
+---
+
+Turns a raw ActivityPub `inbox` page into the notification list a social client shows.
+
+```tsx
+import { NotificationsPanel } from "@/components/notifications-panel";
+
+const inbox = await fetchNotifications(viewer);
+
+<NotificationsPanel
+  collection={inbox}
+  viewer={viewer}
+  unreadIds={unreadIds}
+  onSelect={(activity) => navigate(getObjectId(activity.object))}
+  onMarkAllRead={() => markAllRead()}
+/>
+```
+
+### Categories
+
+| Activity                | Category   |
+| ----------------------- | ---------- |
+| `Like`, `EmojiReact`    | Reactions  |
+| `Announce`              | Boosts     |
+| `Follow`                | Follows    |
+| `Create` with `inReplyTo` | Replies  |
+| `Create` without `inReplyTo` | Mentions |
+
+`getNotificationKind` is exported if you need the same classification elsewhere. Activity types
+outside the table are skipped, so an unexpected `Add` or `Flag` in the inbox will not render a blank
+row. The filter strip only lists categories actually present.
+
+An `EmojiReact` shows its emoji in the badge instead of a generic heart, so the reaction is visible
+without opening the post.
+
+### Unread state
+
+Pass `unreadIds` to control which rows are unread; without it the newest three are marked unread as a
+demo. Selecting a row marks it read locally and calls `onSelect`.
+
+Pass `maxHeight` to bound the scroll area, or `hideFilters` for a compact rail. Without a
+`collection` the panel renders [`social-sample-data`](/utilities/social-sample-data).

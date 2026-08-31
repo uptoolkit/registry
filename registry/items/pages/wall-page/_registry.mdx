@@ -1,0 +1,71 @@
+---
+name: wall-page
+type: registry:page
+title: Wall Page
+description: Profile wall page with a wall composer, filterable activity feed, and intro, photos, and friends rails.
+registryDependencies:
+  - button
+  - card
+  - separator
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-avatar
+  - json-ld
+  - profile-header
+  - wall-feed
+  - actor-grid
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/wall/page.tsx
+---
+
+Someone's wall: the header, a composer for visitors, and the full activity stream — their posts,
+other people's wall posts, reactions, follows, albums, and profile changes — with an intro, photos,
+and friends rail alongside.
+
+```sh
+npx shadcn@latest add @_cn/wall-page
+```
+
+Installs to `app/wall/page.tsx` along with [`wall-feed`](/blocks/wall-feed) and every block,
+component, and helper it uses.
+
+### Wiring it to a real actor
+
+Move the page to a dynamic segment and resolve the owner from the route:
+
+```tsx
+import { buildWebFingerUrl, parseHandle } from "@/lib/activitypub";
+
+export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  const owner = await resolveActorByHandle(handle); // WebFinger, then fetch the actor document
+  const [outbox, friends] = await Promise.all([fetchOutbox(owner), fetchFollowers(owner)]);
+
+  // ...pass owner, outbox, and friends into ProfileHeader, WallFeed, and ActorGrid
+}
+```
+
+`parseHandle` and `buildWebFingerUrl` from [`activitypub`](/utilities/activitypub) cover the
+discovery half of that lookup. Once the data is real, drop the `now={SAMPLE_NOW}` prop so timestamps
+come from the clock.
+
+### The photos rail
+
+The rail does not take its own list. It derives the thumbnails from the attachments already present
+in the wall collection, so the rail and the stream can never disagree about what has been posted.
+
+### Structured data
+
+The page emits one Schema.org `ProfilePage` whose `mainEntity` is the owner and whose `hasPart`
+lists the visible posts. The header's own JSON-LD is switched off with `includeJsonLd={false}`, and
+the friends grid does the same, so the page produces a single profile node rather than three
+overlapping ones. The feed still emits its own `CollectionPage`.
+
+### Related
+
+[`social-profile-page`](/pages/social-profile-page) is the timeline-only version of this page: same
+actor, same header, but a plain post feed instead of the full activity vocabulary.

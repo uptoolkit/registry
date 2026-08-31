@@ -1,0 +1,59 @@
+---
+name: comment-thread
+type: registry:ui
+title: Comment Thread
+description: Nested reply thread with Schema.org Comment markup and an inline composer.
+registryDependencies:
+  - button
+  - textarea
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - actor-avatar
+  - json-ld
+files:
+  - path: comment-thread.tsx
+    type: registry:ui
+---
+
+Builds a nested conversation from a flat list of replies and lets the viewer add to it.
+
+```tsx
+import { CommentThread } from "@/components/ui/comment-thread";
+
+<CommentThread
+  object={note}
+  replies={note.replies}
+  viewer={viewer}
+  onReply={(activity) => postToOutbox(viewer, activity)}
+/>
+```
+
+Replies default to the object's own `replies` collection, so a post fetched from an outbox works
+without a second prop.
+
+### Threading
+
+`buildCommentTree` groups replies by `inReplyTo`. Replies whose parent is not in the list are
+attached at the root rather than dropped, so a partially loaded conversation still renders in full.
+Nesting stops at `maxDepth` (default `3`) and deeper replies flatten into the last level.
+
+```ts
+import { buildCommentTree } from "@/components/ui/comment-thread";
+
+const roots = buildCommentTree(replies, note.id);
+```
+
+### Replying
+
+New replies are emitted as `Create` activities carrying `inReplyTo`, and appear immediately while
+`onReply` settles. Root replies beyond `initialCount` collapse behind a "view more" control, and
+nested replies collapse behind "view N replies".
+
+### Structured data
+
+Each comment carries Schema.org `Comment` microdata with `author`, `text`, `datePublished`, and
+`parentItem`. Add `includeJsonLd` to emit the thread as JSON-LD as well.
+
+Pass `hideComposer` for a read-only permalink view. Omitting `viewer` also hides it, since there is
+no actor to attribute a reply to.

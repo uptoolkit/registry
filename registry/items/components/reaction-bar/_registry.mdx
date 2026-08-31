@@ -1,0 +1,50 @@
+---
+name: reaction-bar
+type: registry:ui
+title: Reaction Bar
+description: Like, boost, reply, and share bar that emits ActivityPub activities.
+registryDependencies:
+  - button
+localRegistryDependencies:
+  - activitypub
+files:
+  - path: reaction-bar.tsx
+    type: registry:ui
+---
+
+Like, boost, reply, and share controls for an ActivityPub object. Every interaction produces an
+activity you can deliver: `Like` or `EmojiReact` for reactions, `Announce` for boosts, and `Undo`
+wrapping the original when the viewer takes it back.
+
+```tsx
+import { ReactionBar } from "@/components/ui/reaction-bar";
+
+<ReactionBar
+  object={note}
+  viewer={viewer}
+  onLike={(activity) => postToOutbox(viewer, activity)}
+  onUnlike={(activity) => postToOutbox(viewer, activity)}
+  onShare={(activity) => postToOutbox(viewer, activity)}
+  onReply={(object) => openComposer(object)}
+/>
+```
+
+### Emoji reactions
+
+Hover or right-click the like button to open the picker. Choosing an emoji emits `EmojiReact` with
+the emoji in `content`, which is how the fediverse carries reactions beyond a plain like. Pass your
+own set, or `reactions={false}` for a single like button:
+
+```tsx
+<ReactionBar object={note} reactions={[{ key: "love", emoji: "❤️", label: "Love" }]} />
+<ReactionBar object={note} reactions={false} />
+```
+
+### Counts
+
+Counts come from the object's own `likes`, `shares`, and `replies` collections, so a document
+fetched straight from an outbox needs no extra props. Override with `counts` when you track them
+separately. The bar assumes the incoming counts exclude the viewer's own action and adds a delta on
+top, so numbers stay correct when a viewer likes and then unlikes.
+
+Pass `variant="compact"` for a denser bar and `showBookmark` to add a local bookmark toggle.

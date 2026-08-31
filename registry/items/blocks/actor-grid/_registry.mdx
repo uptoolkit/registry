@@ -1,0 +1,72 @@
+---
+name: actor-grid
+type: registry:block
+title: Actor Grid
+description: Filterable people grid with Schema.org ItemList markup.
+registryDependencies:
+  - button
+  - input
+localRegistryDependencies:
+  - activitypub
+  - schema-org
+  - social-sample-data
+  - actor-card
+  - json-ld
+files:
+  - path: actor-grid.tsx
+    type: registry:block
+---
+
+One block for every people list: followers, following, mutuals, suggestions, and search results.
+
+```tsx
+import { ActorGrid } from "@/components/actor-grid";
+
+const followers = await fetchFollowers(actor);
+
+<ActorGrid
+  actors={followers}
+  heading="Followers"
+  columns={3}
+  searchable
+  onFollowStateChange={(actor, state) => trackRelationship(actor, state)}
+/>
+```
+
+Accepts a `Collection` or a plain array. When a collection carries `totalItems`, that is the count
+shown in the heading, so a paginated followers list reports its real size instead of the page length.
+
+### Layout
+
+`variant="card"` uses the stacked card with profile fields; `variant="row"` renders compact rows and
+ignores `columns`, which is the shape for a sidebar.
+
+```tsx
+<ActorGrid actors={suggestions} heading="People you may know" variant="row" columns={1} />
+```
+
+### Filtering
+
+`searchable` adds a client-side filter over display name, handle, and bio. `initialCount` limits the
+first render and adds a "show all" control:
+
+```tsx
+<ActorGrid actors={followers} initialCount={6} searchable />
+```
+
+The empty state distinguishes "no results for this query" from "nothing here yet"; override it with
+`emptyState`.
+
+### Relationships
+
+Pass `followStates` keyed by actor id to show mixed relationships in one list:
+
+```tsx
+<ActorGrid actors={people} followStates={{ [actor.id]: "following" }} />
+```
+
+### Structured data
+
+Emits one Schema.org `ItemList` of `Person` nodes for the whole list, and the cards inside skip
+their own JSON-LD so the graph stays clean. Set `includeJsonLd={false}` when the page emits the list
+itself.

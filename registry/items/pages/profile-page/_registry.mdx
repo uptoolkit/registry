@@ -1,0 +1,54 @@
+---
+name: profile-page
+type: registry:page
+title: Profile Page
+description: User profile page with header, tabbed content, activity timeline, and details sidebar.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - card
+  - separator
+  - tabs
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/profile/page.tsx
+  - path: profile-data.ts
+    type: registry:lib
+---
+
+A profile with a cover header, identity and stats, three content tabs, and a details sidebar. It
+stays a server component — nothing on the page needs client state except the tabs primitive itself.
+
+```sh
+npx shadcn@latest add @_cn/profile-page
+```
+
+Installs `app/profile/page.tsx` and the `profile-data` fixtures.
+
+### Wiring it to a real user
+
+Move the page to a dynamic segment and resolve the profile from the route:
+
+```tsx
+export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  const profile = await db.profile.findUniqueOrThrow({ where: { handle } });
+
+  // ...pass profile, activity, and projects into the same sections
+}
+```
+
+Every section reads from the one `Profile` record plus two lists, so the only thing to replace is
+the three `sample*` exports in `profile-data.ts`.
+
+### Notes
+
+Stats render as a `<dl>` with the value ordered before the label visually but after it in source, so
+screen readers announce "Projects, 18" while sighted users read the number first. The activity
+timeline is an ordered list with the connector line drawn as a sibling element, which keeps the list
+semantics intact.
+
+For a federated, ActivityPub-flavored take on the same page, see
+[`social-profile-page`](/pages/social-profile-page).

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "shadcn-registry": {
+      "source": "jakejarvis/_cn",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn-registry/SKILL.md",
+      "computedHash": "c1510c5acc57754054e403a4f78807ceeca4906907f4e6dcc1c6de12bff9b61d"
+    }
+  }
+}
