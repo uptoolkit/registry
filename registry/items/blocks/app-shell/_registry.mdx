@@ -1,0 +1,57 @@
+---
+name: app-shell
+type: registry:block
+title: App Shell
+description: Primary authenticated app shell with a top nav, search, notifications, and a user menu around a content slot.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - dropdown-menu
+  - input
+  - sheet
+localRegistryDependencies:
+  - activitypub
+  - social-sample-data
+  - actor-avatar
+files:
+  - path: app-shell.tsx
+    type: registry:block
+---
+
+Sticky header with primary nav, an optional search field, a notifications button, and an account
+dropdown, wrapped around a `children` content slot. The header collapses into a `Sheet` under `md`.
+
+```tsx
+import { AppShell } from "@/components/app-shell";
+
+<AppShell
+  viewer={viewer}
+  nav={[
+    { label: "Home", href: "/", active: true },
+    { label: "Explore", href: "/explore" },
+  ]}
+  notificationsCount={unreadCount}
+  onSearch={(query) => router.push(`/search?q=${query}`)}
+  onSignOut={() => signOut()}
+>
+  {children}
+</AppShell>;
+```
+
+### Routing
+
+Nav items and the brand link are plain anchors with an `active` flag, not a router `Link`. Swap the
+`<a>` in `nav.map` for your router's link component if you need client-side navigation, and drive
+`active` from the current route.
+
+### Account menu
+
+`onProfileClick`, `onSettingsClick`, and `onSignOut` are called from the avatar dropdown; leave any
+of them out to omit that behavior while keeping the menu item visible for now, or remove the item
+from the component if you don't need it at all.
+
+### Search
+
+The search field only renders when `onSearch` is passed, so routes without search can drop the prop
+entirely instead of hiding an empty input.
