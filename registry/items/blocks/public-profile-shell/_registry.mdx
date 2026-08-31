@@ -1,15 +1,40 @@
 ---
 name: public-profile-shell
 type: registry:block
-title: "Public Profile Shell"
-description: "Actor profile layout that pairs the profile header with a two-column content slot for signed-out visitors."
+title: Public Profile Shell
+description: Actor profile layout that pairs the profile header with a two-column content slot for signed-out visitors.
+registryDependencies:
+  - button
+localRegistryDependencies:
+  - activitypub
+  - social-sample-data
+  - profile-header
 files:
   - path: public-profile-shell.tsx
     type: registry:block
 ---
 
-Actor profile layout that pairs the profile header with a two-column content slot for signed-out visitors.
+A minimal top bar, the [`ProfileHeader`](/blocks/profile-header) block, and a two-column area for the
+timeline plus an optional rail — the layout `profile-page` and `wall-page` compose inline, pulled out
+so a public profile route can reuse it directly.
 
 ```tsx
 import { PublicProfileShell } from "@/components/public-profile-shell";
+
+<PublicProfileShell actor={actor} counts={counts} signInHref="/login" aside={<MutualsCard />}>
+  <SocialFeed viewer={undefined} collection={timeline} />
+</PublicProfileShell>;
 ```
+
+### Signed-out follow
+
+`viewer` isn't a prop here — the shell always renders `ProfileHeader` without one, since the visitor
+isn't signed in. `onFollow` and `onUnfollow` still fire after the optimistic UI update, so redirect to
+`signInHref` from one of them if you want the follow button to gate on sign-in instead of failing
+silently.
+
+### Layout
+
+`aside` renders in a `lg:w-80` rail next to `children`; pass `asideFirst` to put it before the main
+column, matching a wall-style layout instead of a feed-style one. Omit `aside` for a single-column
+page.

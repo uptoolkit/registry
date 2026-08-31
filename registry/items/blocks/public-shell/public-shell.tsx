@@ -86,7 +86,12 @@ function PublicShell({
                   </a>
                 ))}
                 <div className="mt-2 flex flex-col gap-2 border-t pt-4">
-                  <Button variant="outline" size="sm" nativeButton={false} render={<a href={signInHref} />}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    nativeButton={false}
+                    render={<a href={signInHref} />}
+                  >
                     Sign in
                   </Button>
                   <Button size="sm" nativeButton={false} render={<a href={signUpHref} />}>

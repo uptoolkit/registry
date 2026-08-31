@@ -154,7 +154,8 @@ function AppShell({
                 onSubmit={(event) => {
                   event.preventDefault();
                   const data = new FormData(event.currentTarget);
-                  onSearch(String(data.get("q") ?? ""));
+                  const query = data.get("q");
+                  onSearch(typeof query === "string" ? query : "");
                 }}
               >
                 <div className="relative">

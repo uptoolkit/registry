@@ -1,15 +1,34 @@
 ---
 name: settings-shell
 type: registry:block
-title: "Settings Shell"
-description: "Sidebar section nav and content pane shell for account settings pages."
+title: Settings Shell
+description: Sidebar section nav and content pane shell for account settings pages.
+registryDependencies:
+  - button
 files:
   - path: settings-shell.tsx
     type: registry:block
 ---
 
-Sidebar section nav and content pane shell for account settings pages.
+Sidebar section nav plus a content pane, generalized out of `settings-page`'s inline nav so any
+settings route can reuse the same layout with its own forms.
 
 ```tsx
 import { SettingsShell } from "@/components/settings-shell";
+
+<SettingsShell
+  title="Settings"
+  description="Manage how you appear, what we send you, and how to leave."
+  sections={[
+    { id: "profile", label: "Profile", content: <ProfilePanel /> },
+    { id: "notifications", label: "Notifications", content: <NotificationsPanel /> },
+  ]}
+/>;
 ```
+
+### Section state
+
+Each section owns its `content`, so switching panels is a matter of editing the `sections` array
+instead of branching on the active id yourself. State is uncontrolled by default; pass
+`activeSection` and `onSectionChange` to move it into a search param so the section survives a
+refresh, the same tradeoff [`settings-page`](/pages/settings-page) calls out for its own nav.

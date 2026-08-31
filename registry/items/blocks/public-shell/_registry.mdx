@@ -1,15 +1,45 @@
 ---
 name: public-shell
 type: registry:block
-title: "Public Shell"
-description: "Signed-out marketing shell with a top nav, sign-in actions, and a footer around a content slot."
+title: Public Shell
+description: Signed-out marketing shell with a top nav, sign-in actions, and a footer around a content slot.
+registryDependencies:
+  - button
+  - sheet
 files:
   - path: public-shell.tsx
     type: registry:block
 ---
 
-Signed-out marketing shell with a top nav, sign-in actions, and a footer around a content slot.
+Header with nav and sign-in/sign-up links, a `children` content slot, and a link-column footer.
+Marketing and landing pages install this once and swap `children` per route.
 
 ```tsx
 import { PublicShell } from "@/components/public-shell";
+
+<PublicShell
+  nav={[
+    { label: "Product", href: "/product", active: true },
+    { label: "Pricing", href: "/pricing" },
+  ]}
+  signInHref="/login"
+  signUpHref="/signup"
+  footerSections={[
+    { heading: "Product", links: [{ label: "Overview", href: "/product" }] },
+  ]}
+>
+  {children}
+</PublicShell>;
 ```
+
+### Routing
+
+Nav items, the brand link, and footer links are plain anchors, not a router `Link`. Swap the `<a>`
+elements for your router's link component if you need client-side navigation, and drive `active`
+from the current route.
+
+### Footer
+
+`footerSections` renders as a responsive link grid; omit it to render just the `footerNote` line.
+`footerNote` defaults to a generic rights line built from `brand.name` — pass your own to include a
+year or legal entity name.
