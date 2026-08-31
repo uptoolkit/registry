@@ -1,6 +1,6 @@
 # \_cn
 
-<p align="center"><a href="https://underscore-cn.vercel.app"><img width="2776" height="1596" alt="underscorecn" src="https://github.com/user-attachments/assets/04bbb481-9ca8-49c3-bc83-b7d9a72e4b61" /></a></p>
+<p align="center"><a href="https://ui.uptoolkit.com"><img width="2776" height="1596" alt="underscorecn" src="https://github.com/user-attachments/assets/04bbb481-9ca8-49c3-bc83-b7d9a72e4b61" /></a></p>
 
 An intentionally minimal [TanStack Start](https://tanstack.com/start/latest) + [Vite+](https://viteplus.dev/) starter template for publishing a [shadcn-compatible registry](https://ui.shadcn.com/docs/registry) without writing the documentation site and registry plumbing from scratch.
 
@@ -50,7 +50,7 @@ After installing the skill, ask your agent for registry authoring work directly:
 
 ## Deploy
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjakejarvis%2F_cn&project-name=my-registry&repository-name=my-registry&demo-title=_cn%20Registry&demo-url=https%3A%2F%2Funderscore-cn.vercel.app)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjakejarvis%2F_cn&project-name=my-registry&repository-name=my-registry&demo-title=_cn%20Registry&demo-url=https%3A%2F%2Fui.uptoolkit.com)
 
 Above is a one-click button to fork the template and deploy it to Vercel as a platform-agnostic [Nitro server](https://nitro.build/).
 
@@ -68,7 +68,7 @@ export const registryConfig = {
   registryName: "_cn",
   namespace: "@_cn",
   description: "Installable components for your project.",
-  homepage: "https://underscore-cn.vercel.app",
+  homepage: "https://ui.uptoolkit.com",
   repositoryUrl: "https://github.com/jakejarvis/_cn",
 } as const;
 ```

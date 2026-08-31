@@ -7,15 +7,15 @@ order: 4
 Install a registry item with the command shown on its docs page.
 
 ```sh
-npx shadcn@latest add https://underscore-cn.vercel.app/r/example-card.json
+npx shadcn@latest add https://ui.uptoolkit.com/r/comment-thread.json
 ```
 
 The command that's displayed uses the `homepage` value from `registry/config.ts` for the base URL.
 
-Human-facing item pages also work with the shadcn CLI through content negotiation. For example, a browser can view [`/components/example-card`](/components/example-card), while the CLI receives the installable item JSON from the same URL:
+Human-facing item pages also work with the shadcn CLI through content negotiation. For example, a browser can view [`/components/comment-thread`](/components/comment-thread), while the CLI receives the installable item JSON from the same URL:
 
 ```sh
-npx shadcn@latest add https://underscore-cn.vercel.app/components/example-card
+npx shadcn@latest add https://ui.uptoolkit.com/components/comment-thread
 ```
 
 Use the package manager selector on item pages to switch between npm, pnpm, yarn, bun, vite+, and deno commands.
