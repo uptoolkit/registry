@@ -7,7 +7,7 @@ import { registryCatalog, type RegistryItemType } from "./registry/item-types.ts
 import { parseRegistryMdx } from "./registry/mdx.ts";
 import {
   getRegistryItemRoutePath,
-  getRegistrySectionIdForType,
+  getRegistrySectionIdForItem,
   getRegistrySectionsWithItems,
 } from "./registry/sections.ts";
 import { shouldExcludeFromSitemap } from "./seo.ts";
@@ -29,6 +29,7 @@ type PrerenderPage = {
 type RegistryPrerenderItem = {
   name: string;
   type: RegistryItemType;
+  categories?: readonly string[];
 };
 
 type PrerenderPagesInput = {
@@ -85,7 +86,7 @@ export function createPrerenderPages({
     addPath(getDocsMarkdownPath(itemPath));
 
     // Page items additionally get the standalone frame their docs page embeds.
-    if (getRegistrySectionIdForType(item.type) === "pages") {
+    if (getRegistrySectionIdForItem(item) === "pages") {
       addPath(`/view/${item.name}`);
     }
   }
@@ -127,6 +128,7 @@ function getRegistryPrerenderItem(path: string): RegistryPrerenderItem {
   return {
     name: item.name,
     type: item.type,
+    categories: item.categories,
   };
 }
 

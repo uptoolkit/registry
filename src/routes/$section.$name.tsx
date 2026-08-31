@@ -8,7 +8,7 @@ import { registryNavigationItems } from "../lib/registry/catalog-navigation";
 import { getRegistryItemDetail } from "../lib/registry/detail.functions";
 import {
   getRegistryItemRoutePath,
-  getRegistrySectionForType,
+  getRegistrySectionForItem,
   getRegistrySectionItem,
   isRegistrySectionId,
 } from "../lib/registry/sections";
@@ -48,7 +48,7 @@ export const Route = createFileRoute("/$section/$name")({
       });
     }
 
-    const section = getRegistrySectionForType(item.type);
+    const section = getRegistrySectionForItem(item);
     const path = getRegistryItemRoutePath(item);
 
     return getSeoHead({
@@ -83,7 +83,7 @@ function RegistrySectionItemPendingRoute() {
 
 function RegistrySectionItemRoute() {
   const item = Route.useLoaderData();
-  const section = getRegistrySectionForType(item.type);
+  const section = getRegistrySectionForItem(item);
 
   return (
     <DocsLayout section={section.id}>

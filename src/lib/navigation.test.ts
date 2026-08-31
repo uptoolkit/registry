@@ -23,24 +23,35 @@ const fixtureRegistryItems = [
     title: "Alpha Card",
     description: "A compact card.",
     type: "registry:ui",
+    categories: [] as string[],
   },
   {
     name: "stats-grid",
     title: "Stats Grid",
     description: "A dashboard block.",
     type: "registry:block",
+    categories: [] as string[],
+  },
+  {
+    name: "app-shell",
+    title: "App Shell",
+    description: "An app shell layout.",
+    type: "registry:block",
+    categories: ["layout"] as string[],
   },
   {
     name: "settings-page",
     title: "Settings Page",
     description: "An account settings page.",
     type: "registry:page",
+    categories: [] as string[],
   },
   {
     name: "use-clipboard",
     title: "useClipboard",
     description: "A clipboard hook.",
     type: "registry:hook",
+    categories: [] as string[],
   },
 ] as const;
 
@@ -55,6 +66,7 @@ describe("site navigation", () => {
       "docs",
       "components",
       "blocks",
+      "layouts",
       "pages",
       "utilities",
     ]);
@@ -62,6 +74,7 @@ describe("site navigation", () => {
       "Docs",
       "Components",
       "Blocks",
+      "Layouts",
       "Pages",
       "Utilities",
     ]);
@@ -86,6 +99,13 @@ describe("site navigation", () => {
     ).toMatchObject({
       routePath: "/blocks/stats-grid",
       sectionId: "blocks",
+    });
+
+    expect(
+      sectionItems.find((item) => item.kind === "registry" && item.name === "app-shell"),
+    ).toMatchObject({
+      routePath: "/layouts/app-shell",
+      sectionId: "layouts",
     });
 
     expect(

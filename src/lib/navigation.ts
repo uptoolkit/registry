@@ -8,7 +8,7 @@ import {
 import {
   getRegistryItemRoutePath,
   getRegistrySection,
-  getRegistrySectionIdForType,
+  getRegistrySectionIdForItem,
   getRegistrySectionsWithItems,
   type RegistrySectionId,
 } from "./registry/sections";
@@ -191,7 +191,7 @@ function toRegistryNavigationItem(item: RegistryNavigationSourceItem): RegistryN
     title: item.title,
     name: item.name,
     description: item.description,
-    sectionId: getRegistrySectionIdForType(item.type),
+    sectionId: getRegistrySectionIdForItem(item),
     routePath: getRegistryItemRoutePath(item),
   };
 }

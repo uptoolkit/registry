@@ -5,6 +5,7 @@ import {
   IconComponents,
   IconDownload,
   IconFileText,
+  IconLayoutDashboard,
   IconLayoutGrid,
   IconTool,
 } from "@tabler/icons-react";
@@ -14,8 +15,8 @@ import { InstallCommand } from "@/components/docs/install-command";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { getSeoHead } from "../lib/seo";
 import { registrySectionList, type RegistrySectionId } from "../lib/registry/sections";
+import { getSeoHead } from "../lib/seo";
 import { siteConfig } from "../lib/site-config";
 
 export const Route = createFileRoute("/")({
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/")({
 const sectionIcons: Record<RegistrySectionId, typeof IconComponents> = {
   components: IconComponents,
   blocks: IconLayoutGrid,
+  layouts: IconLayoutDashboard,
   pages: IconFileText,
   utilities: IconTool,
 };
@@ -39,7 +41,7 @@ const steps = [
   {
     title: "Browse the catalog",
     description:
-      "Explore components, blocks, pages, and utilities, each with a live preview and the full source shown right on the page.",
+      "Explore components, blocks, layouts, pages, and utilities, each with a live preview and the full source shown right on the page.",
     icon: IconLayoutGrid,
   },
   {
@@ -69,9 +71,9 @@ function HomePage() {
         </p>
         <p className="max-w-xl text-sm text-balance text-muted-foreground">
           Instead of installing a black-box package, you pull real source files into your own
-          project with the <code className="font-mono text-foreground">shadcn</code> CLI. There's
-          no version to fall behind on and no bundle you can't inspect — once an item is installed
-          it's just your code.
+          project with the <code className="font-mono text-foreground">shadcn</code> CLI. There's no
+          version to fall behind on and no bundle you can't inspect — once an item is installed it's
+          just your code.
         </p>
         <div className="flex items-center gap-3">
           <Button
@@ -99,11 +101,11 @@ function HomePage() {
         <div className="mb-8 flex flex-col items-center gap-2 text-center">
           <h2 className="font-heading text-xl font-semibold sm:text-2xl">What's in the registry</h2>
           <p className="max-w-lg text-sm text-muted-foreground">
-            Items are grouped by how much of your app they cover, from single primitives to
-            entire routes.
+            Items are grouped by how much of your app they cover, from single primitives to entire
+            routes.
           </p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {registrySectionList.map((section) => {
             const SectionIcon = sectionIcons[section.id];
 

@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { publicRegistryItemTypes } from "./item-types";
 import {
   getRegistryItemRoutePath,
+  getRegistrySectionIdForItem,
   getRegistrySectionIdForType,
   getRegistrySectionItem,
   getRegistrySectionsWithItems,
@@ -12,6 +13,7 @@ import {
 const fixtureRegistryItems = [
   { name: "alpha-card", type: "registry:ui" },
   { name: "stats-grid", type: "registry:block" },
+  { name: "app-shell", type: "registry:block", categories: ["layout"] },
   { name: "settings-page", type: "registry:page" },
   { name: "use-clipboard", type: "registry:hook" },
 ] as const;
@@ -49,18 +51,41 @@ describe("registry sections", () => {
     );
   });
 
+  test("routes a block tagged 'layout' into the layouts section", () => {
+    expect(
+      getRegistryItemRoutePath({
+        name: "app-shell",
+        type: "registry:block",
+        categories: ["layout"],
+      }),
+    ).toBe("/layouts/app-shell");
+    expect(getRegistrySectionIdForItem({ type: "registry:block", categories: ["layout"] })).toBe(
+      "layouts",
+    );
+    expect(getRegistrySectionIdForItem({ type: "registry:block", categories: ["marketing"] })).toBe(
+      "blocks",
+    );
+    expect(getRegistrySectionIdForItem({ type: "registry:block" })).toBe("blocks");
+    expect(getRegistrySectionIdForItem({ type: "registry:page", categories: ["layout"] })).toBe(
+      "pages",
+    );
+  });
+
   test("groups registry items into visible sections", () => {
     const sections = getRegistrySectionsWithItems(fixtureRegistryItems);
 
     expect(sections.map((section) => section.id)).toEqual(
-      expect.arrayContaining(["components", "blocks", "pages", "utilities"]),
+      expect.arrayContaining(["components", "blocks", "layouts", "pages", "utilities"]),
     );
     expect(
       sections.find((section) => section.id === "components")?.items.map(({ name }) => name),
     ).toContain("alpha-card");
     expect(
       sections.find((section) => section.id === "blocks")?.items.map(({ name }) => name),
-    ).toContain("stats-grid");
+    ).toEqual(["stats-grid"]);
+    expect(
+      sections.find((section) => section.id === "layouts")?.items.map(({ name }) => name),
+    ).toContain("app-shell");
     expect(
       sections.find((section) => section.id === "pages")?.items.map(({ name }) => name),
     ).toContain("settings-page");
@@ -76,6 +101,12 @@ describe("registry sections", () => {
     expect(
       getRegistrySectionItem(registrySections.blocks.id, "alpha-card", fixtureRegistryItems),
     ).toBeUndefined();
+    expect(
+      getRegistrySectionItem(registrySections.blocks.id, "app-shell", fixtureRegistryItems),
+    ).toBeUndefined();
+    expect(
+      getRegistrySectionItem(registrySections.layouts.id, "app-shell", fixtureRegistryItems),
+    ).toBeDefined();
     expect(getRegistrySectionItem("missing", "alpha-card", fixtureRegistryItems)).toBeUndefined();
   });
 });

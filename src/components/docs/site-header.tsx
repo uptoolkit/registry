@@ -90,6 +90,7 @@ function HeaderSectionLink({
       );
     case "components":
     case "blocks":
+    case "layouts":
     case "pages":
     case "utilities":
       return (

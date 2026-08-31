@@ -1,11 +1,13 @@
 import type { RegistryCatalogItem } from "./catalog-builder";
 import type { RegistryItemType } from "./item-types.ts";
 
-export type RegistrySectionId = "components" | "blocks" | "pages" | "utilities";
+export type RegistrySectionId = "components" | "blocks" | "layouts" | "pages" | "utilities";
 
 export type RegistryRouteItem = {
   name: string;
   type: RegistryItemType;
+  /** Shadcn's free-form tags. A `registry:block` tagged "layout" lives in the Layouts section. */
+  categories?: readonly string[];
 };
 
 export type RegistrySectionConfig = {
@@ -27,6 +29,9 @@ const componentRegistryTypes = [
 ] as const satisfies readonly RegistryItemType[];
 
 const blockRegistryTypes = ["registry:block"] as const satisfies readonly RegistryItemType[];
+
+/** Layouts are `registry:block` items tagged with this category (see `isLayoutRegistryItem`). */
+const layoutRegistryTypes = ["registry:block"] as const satisfies readonly RegistryItemType[];
 
 const pageRegistryTypes = ["registry:page"] as const satisfies readonly RegistryItemType[];
 
@@ -56,6 +61,13 @@ export const registrySections = {
     basePath: "/blocks",
     types: blockRegistryTypes,
   },
+  layouts: {
+    id: "layouts",
+    title: "Layouts",
+    description: "Reusable app shells and page layouts you can drop straight into a route.",
+    basePath: "/layouts",
+    types: layoutRegistryTypes,
+  },
   pages: {
     id: "pages",
     title: "Pages",
@@ -75,6 +87,7 @@ export const registrySections = {
 export const registrySectionList = [
   registrySections.components,
   registrySections.blocks,
+  registrySections.layouts,
   registrySections.pages,
   registrySections.utilities,
 ] as const satisfies readonly RegistrySectionConfig[];
@@ -94,6 +107,15 @@ const registrySectionByType = {
   "registry:item": "utilities",
 } as const satisfies Record<RegistryItemType, RegistrySectionId>;
 
+/** The `categories` tag that moves a `registry:block` item into the Layouts section. */
+const layoutCategory = "layout";
+
+export function isLayoutRegistryItem(
+  item: Pick<RegistryRouteItem, "type" | "categories">,
+): boolean {
+  return item.type === "registry:block" && (item.categories ?? []).includes(layoutCategory);
+}
+
 export function isRegistrySectionId(value: unknown): value is RegistrySectionId {
   return typeof value === "string" && registrySectionList.some((section) => section.id === value);
 }
@@ -110,8 +132,25 @@ export function getRegistrySectionForType(type: RegistryItemType): RegistrySecti
   return registrySections[getRegistrySectionIdForType(type)];
 }
 
+/**
+ * Like `getRegistrySectionIdForType`, but also reads `categories` so a
+ * `registry:block` tagged "layout" resolves to the Layouts section instead
+ * of Blocks. Prefer this whenever a full item (not a bare type) is on hand.
+ */
+export function getRegistrySectionIdForItem(
+  item: Pick<RegistryRouteItem, "type" | "categories">,
+): RegistrySectionId {
+  return isLayoutRegistryItem(item) ? "layouts" : getRegistrySectionIdForType(item.type);
+}
+
+export function getRegistrySectionForItem(
+  item: Pick<RegistryRouteItem, "type" | "categories">,
+): RegistrySectionConfig {
+  return registrySections[getRegistrySectionIdForItem(item)];
+}
+
 export function getRegistryItemRoutePath(item: RegistryRouteItem): string {
-  return `${getRegistrySectionForType(item.type).basePath}/${item.name}`;
+  return `${getRegistrySectionForItem(item).basePath}/${item.name}`;
 }
 
 export function getRegistrySectionsWithItems<T extends RegistryRouteItem>(
@@ -147,7 +186,7 @@ export function getRegistrySectionItem<T extends RegistryRouteItem>(
   }
 
   return items.find(
-    (item) => item.name === itemName && getRegistrySectionIdForType(item.type) === section.id,
+    (item) => item.name === itemName && getRegistrySectionIdForItem(item) === section.id,
   );
 }
 
@@ -167,5 +206,5 @@ function getRegistryItemsForSection<T extends RegistryRouteItem>(
   items: readonly T[],
   sectionId: RegistrySectionId,
 ): T[] {
-  return items.filter((item) => getRegistrySectionIdForType(item.type) === sectionId);
+  return items.filter((item) => getRegistrySectionIdForItem(item) === sectionId);
 }

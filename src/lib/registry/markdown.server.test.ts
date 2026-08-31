@@ -16,7 +16,7 @@ import {
 } from "./markdown.server";
 import {
   getRegistryItemRoutePath,
-  getRegistrySectionIdForType,
+  getRegistrySectionIdForItem,
   getRegistrySectionsWithItems,
   registrySectionList,
 } from "./sections";
@@ -223,7 +223,7 @@ import { useAlphaState } from "@/hooks/use-alpha-state";
     const sectionItemResponses = await Promise.all(
       registryItems.map(async (item) => {
         const found = getRegistrySectionItemMarkdownResponse(
-          getRegistrySectionIdForType(item.type),
+          getRegistrySectionIdForItem(item),
           item.name,
         );
         const text = await found.text();
@@ -262,7 +262,7 @@ import { useAlphaState } from "@/hooks/use-alpha-state";
     }
 
     const wrongSection = registrySectionList.find(
-      (section) => section.id !== getRegistrySectionIdForType(firstItem.type),
+      (section) => section.id !== getRegistrySectionIdForItem(firstItem),
     );
     if (!wrongSection) {
       throw new Error("Expected at least one registry section outside the first item section");

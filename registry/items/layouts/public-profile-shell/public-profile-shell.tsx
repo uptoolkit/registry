@@ -5,9 +5,9 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { ProfileHeader, type ProfileHeaderProps } from "../../blocks/profile-header/profile-header";
 import type { ActivityPubActor } from "../../lib/activitypub/activitypub";
 import { sampleAuthor, sampleCounts } from "../../lib/social-sample-data/social-sample-data";
-import { ProfileHeader, type ProfileHeaderProps } from "../profile-header/profile-header";
 
 type PublicProfileShellProps = {
   actor?: ActivityPubActor;

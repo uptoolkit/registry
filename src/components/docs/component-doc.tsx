@@ -2,7 +2,7 @@ import { IconAppWindow, IconCode, IconFiles, IconTerminal } from "@tabler/icons-
 import { Link } from "@tanstack/react-router";
 
 import type { RegistryItemDetail } from "../../lib/registry/detail.server";
-import { getRegistryItemRoutePath, getRegistrySectionForType } from "../../lib/registry/sections";
+import { getRegistryItemRoutePath, getRegistrySectionForItem } from "../../lib/registry/sections";
 import { cn } from "../../lib/utils";
 import {
   Breadcrumb,
@@ -25,7 +25,7 @@ type RegistryItemDocProps = {
 };
 
 export function RegistryItemDoc({ item }: RegistryItemDocProps) {
-  const section = getRegistrySectionForType(item.type);
+  const section = getRegistrySectionForItem(item);
   const pagePath = getRegistryItemRoutePath(item);
   const isPageSection = section.id === "pages";
 

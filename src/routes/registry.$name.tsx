@@ -6,7 +6,7 @@ import { DocsLayout } from "@/components/docs/docs-layout";
 
 import { getRegistryItemDetail } from "../lib/registry/detail.functions";
 import { registryCatalog } from "../lib/registry/item-types";
-import { getRegistryItemRoutePath, getRegistrySectionForType } from "../lib/registry/sections";
+import { getRegistryItemRoutePath, getRegistrySectionForItem } from "../lib/registry/sections";
 import { getMarkdownAlternatePath, getSeoHead, getTechArticleJsonLd } from "../lib/seo";
 
 export const Route = createFileRoute("/registry/$name")({
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/registry/$name")({
     }
 
     const path = getRegistryItemRoutePath(item);
-    const section = getRegistrySectionForType(item.type);
+    const section = getRegistrySectionForItem(item);
 
     return getSeoHead({
       title: item.title,
@@ -62,7 +62,7 @@ function RegistryItemPendingRoute() {
 
 function RegistryItemRoute() {
   const item = Route.useLoaderData();
-  const section = getRegistrySectionForType(item.type);
+  const section = getRegistrySectionForItem(item);
 
   return (
     <DocsLayout section={section.id}>

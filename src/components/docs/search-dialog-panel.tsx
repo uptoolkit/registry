@@ -35,7 +35,7 @@ type SearchState = "idle" | "loading" | "ready" | "error";
 
 const searchDebounceMs = 120;
 const searchResultLimit = 20;
-const sectionOrder = ["docs", "components", "blocks", "pages", "utilities"] as const;
+const sectionOrder = ["docs", "components", "blocks", "layouts", "pages", "utilities"] as const;
 
 export function SearchDialogPanel({ open, onOpenChange }: SearchDialogPanelProps) {
   const navigate = useNavigate();
@@ -111,6 +111,7 @@ export function SearchDialogPanel({ open, onOpenChange }: SearchDialogPanelProps
         return;
       case "components":
       case "blocks":
+      case "layouts":
       case "pages":
       case "utilities":
         void navigate({

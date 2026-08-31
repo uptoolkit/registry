@@ -85,6 +85,7 @@ const registryNavigationItems = defineCollection({
       type: item.type,
       title: item.title ?? getDefaultRegistryTitle(item.name),
       description: item.description ?? "",
+      categories: item.categories ?? [],
     };
   },
 });

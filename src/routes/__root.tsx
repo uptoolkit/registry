@@ -134,6 +134,11 @@ function GlobalNotFoundRoute() {
               description="Composed templates and sections"
             />
             <NotFoundSectionLink
+              section="layouts"
+              label="Layouts"
+              description="Reusable app shells and page layouts"
+            />
+            <NotFoundSectionLink
               section="pages"
               label="Pages"
               description="Full-page templates for app routes"

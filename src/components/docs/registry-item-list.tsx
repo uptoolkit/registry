@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import type { RegistryRouteItem } from "../../lib/registry/sections";
-import { getRegistrySectionIdForType } from "../../lib/registry/sections";
+import { getRegistrySectionIdForItem } from "../../lib/registry/sections";
 import { DocsPageHeader } from "./docs-page-header";
 
 type RegistryListItem = RegistryRouteItem & {
@@ -33,7 +33,7 @@ export function RegistryItemList({ catalog }: RegistryItemListProps) {
             <Link
               key={item.name}
               to="/$section/$name"
-              params={{ section: getRegistrySectionIdForType(item.type), name: item.name }}
+              params={{ section: getRegistrySectionIdForItem(item), name: item.name }}
               className="flex flex-col gap-1 border-b py-3 transition-colors first:border-t hover:text-foreground"
             >
               <span className="text-sm font-medium">{item.title}</span>
