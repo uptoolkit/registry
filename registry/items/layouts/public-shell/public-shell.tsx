@@ -33,9 +33,9 @@ type PublicShellProps = {
 };
 
 const defaultNav: readonly PublicShellNavItem[] = [
-  { label: "Product", href: "#" },
-  { label: "Pricing", href: "#" },
-  { label: "Docs", href: "#" },
+  { label: "Product", href: "#product" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Docs", href: "#docs" },
 ];
 
 /**
@@ -71,7 +71,7 @@ function PublicShell({
               <nav aria-label="Primary" className="flex flex-col gap-1 p-4 pt-12">
                 {nav.map((item) => (
                   <a
-                    key={item.href}
+                    key={`${item.href}-${item.label}`}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
                     aria-current={item.active ? "page" : undefined}
@@ -112,7 +112,7 @@ function PublicShell({
           <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
             {nav.map((item) => (
               <a
-                key={item.href}
+                key={`${item.href}-${item.label}`}
                 href={item.href}
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
@@ -147,7 +147,7 @@ function PublicShell({
                   <span className="text-sm font-medium">{section.heading}</span>
                   <ul className="m-0 flex list-none flex-col gap-2 p-0">
                     {section.links.map((link) => (
-                      <li key={link.href}>
+                      <li key={`${link.href}-${link.label}`}>
                         <a
                           href={link.href}
                           className="text-sm text-muted-foreground hover:text-foreground"

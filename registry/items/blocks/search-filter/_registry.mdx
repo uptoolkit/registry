@@ -1,0 +1,61 @@
+---
+name: search-filter
+type: registry:block
+title: Search Filter
+description: Search box plus faceted toggle-button filters, with a per-option count and a conditional Clear action.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - input
+  - label
+  - separator
+files:
+  - path: search-filter.tsx
+    type: registry:block
+---
+
+A search field plus one toggle-button group per facet, each option showing a count and reflecting
+its selected state with `aria-pressed`. Domain-agnostic — it doesn't know about listings, posts, or
+anything else, so the same component works for any list.
+
+```tsx
+import { SearchFilter, type SearchFilterValue } from "@/components/search-filter";
+
+const facets = [
+  {
+    id: "category",
+    legend: "Category",
+    options: [
+      { value: "Analytics", count: 12 },
+      { value: "Monitoring", count: 8 },
+    ],
+  },
+];
+
+function Browser({ items }: { items: Item[] }) {
+  const [value, setValue] = useState<SearchFilterValue>({ query: "", selected: {} });
+  const results = filterItems(items, value);
+
+  return <SearchFilter facets={facets} value={value} onChange={setValue} />;
+}
+```
+
+### State
+
+`value` is `{ query, selected }`, where `selected` maps each facet's `id` to the option values
+checked for it. State is uncontrolled by default — render `<SearchFilter facets={facets} />` alone
+and read nothing back — but pass `value` and `onChange` together to control it, for example to sync
+filters into a search param so they survive a refresh.
+
+### Filtering
+
+The component only renders the controls; it doesn't touch your data. Write your own predicate
+against `value.query` and `value.selected` (see `filterListings` in
+[`listing-page`](/pages/listing-page) for one example), or hand `value` to a search backend.
+
+### Facets
+
+Each facet is `{ id, legend, options }`, and each option is `{ value, label?, count? }` — `label`
+falls back to `value`, and `count` renders as a trailing badge when present. Omit `facets` entirely
+for a search-only filter with no groups.

@@ -12,9 +12,9 @@ export function Preview() {
       notificationsCount={3}
       onSearch={() => {}}
       nav={[
-        { label: "Home", href: "#", active: true },
-        { label: "Explore", href: "#" },
-        { label: "Notifications", href: "#" },
+        { label: "Home", href: "#home", active: true },
+        { label: "Explore", href: "#explore" },
+        { label: "Notifications", href: "#notifications" },
       ]}
     >
       <Card>

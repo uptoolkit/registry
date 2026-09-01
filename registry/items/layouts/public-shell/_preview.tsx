@@ -6,23 +6,23 @@ export function Preview() {
   return (
     <PublicShell
       nav={[
-        { label: "Product", href: "#", active: true },
-        { label: "Pricing", href: "#" },
-        { label: "Docs", href: "#" },
+        { label: "Product", href: "#product", active: true },
+        { label: "Pricing", href: "#pricing" },
+        { label: "Docs", href: "#docs" },
       ]}
       footerSections={[
         {
           heading: "Product",
           links: [
-            { label: "Overview", href: "#" },
-            { label: "Pricing", href: "#" },
+            { label: "Overview", href: "#overview" },
+            { label: "Pricing", href: "#pricing" },
           ],
         },
         {
           heading: "Company",
           links: [
-            { label: "About", href: "#" },
-            { label: "Blog", href: "#" },
+            { label: "About", href: "#about" },
+            { label: "Blog", href: "#blog" },
           ],
         },
       ]}
