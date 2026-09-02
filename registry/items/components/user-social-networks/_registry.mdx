@@ -1,0 +1,38 @@
+---
+name: user-social-networks
+type: registry:ui
+title: User Social Networks
+description: User social network profiles with Facebook, LinkedIn, and Grok display variants.
+registryDependencies:
+  - card
+localRegistryDependencies:
+  - social-networks
+  - social-network-link
+files:
+  - path: user-social-networks.tsx
+    type: registry:ui
+---
+
+Renders a user's Facebook, LinkedIn, and Grok (or any other supported) profiles
+using a display style named after each network's UI conventions.
+
+```tsx
+import { UserSocialNetworks } from "@/components/ui/user-social-networks";
+import { socialProfilesFromPropertyValues } from "@/lib/social-networks";
+
+const profiles = socialProfilesFromPropertyValues(actor.attachment ?? []);
+
+<UserSocialNetworks profiles={profiles} variant="linkedin" />;
+<UserSocialNetworks profiles={profiles} variant="facebook" />;
+<UserSocialNetworks profiles={profiles} variant="grok" />;
+```
+
+### Variants
+
+- **`facebook`** — horizontal row of circular brand icon buttons
+- **`linkedin`** — labelled rows inside a card, with verified badges
+- **`grok`** — compact monospace chips with minimal chrome
+
+Pass `bordered={false}` on the LinkedIn variant to drop the surrounding card.
+Without `profiles` the component renders sample data so it works immediately
+after install.

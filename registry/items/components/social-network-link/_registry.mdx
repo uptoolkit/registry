@@ -1,0 +1,41 @@
+---
+name: social-network-link
+type: registry:ui
+title: Social Network Link
+description: Branded outbound link for a single Facebook, LinkedIn, or Grok profile.
+registryDependencies:
+  - badge
+  - button
+localRegistryDependencies:
+  - social-networks
+files:
+  - path: social-network-link.tsx
+    type: registry:ui
+---
+
+One outbound profile link with brand iconography. Four display modes cover the
+common patterns used across Facebook, LinkedIn, and Grok profile pages.
+
+```tsx
+import { SocialNetworkLink } from "@/components/ui/social-network-link";
+
+<SocialNetworkLink
+  profile={{
+    network: "linkedin",
+    url: "https://www.linkedin.com/in/ada",
+    username: "ada",
+    verified: true,
+  }}
+  variant="row"
+/>;
+```
+
+| Variant  | Style                                      |
+| -------- | ------------------------------------------ |
+| `icon`   | Circular brand button (Facebook-like)      |
+| `row`    | Labelled row with external link (LinkedIn) |
+| `chip`   | Compact pill with handle (Grok-like)       |
+| `button` | Outline button with badge                  |
+
+Links use `rel="me noopener noreferrer"` so they work as verified identity links
+when the profile URL matches a `rel="me"` assertion on the actor.

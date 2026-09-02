@@ -1,0 +1,33 @@
+---
+name: social-networks
+type: registry:lib
+title: Social Networks
+description: Social network platform definitions, URL helpers, and sample profile links.
+files:
+  - path: social-networks.ts
+    type: registry:lib
+  - path: social-network-icons.tsx
+    type: registry:lib
+---
+
+Platform metadata and URL helpers for external social profiles. Built-in support for
+**Facebook**, **LinkedIn**, and **Grok**, with room to extend the registry at runtime.
+
+```ts
+import {
+  buildSocialNetworkUrl,
+  detectSocialNetwork,
+  getProfileUsername,
+  socialProfilesFromPropertyValues,
+} from "@/lib/social-networks";
+
+detectSocialNetwork("https://www.linkedin.com/in/ada"); // "linkedin"
+buildSocialNetworkUrl("grok", "@mira_maps"); // "https://grok.com/@mira_maps"
+socialProfilesFromPropertyValues(actor.attachment ?? []);
+```
+
+`SocialNetworkProfile` is the data contract consumed by
+[`social-network-link`](/components/social-network-link) and
+[`user-social-networks`](/components/user-social-networks). Pass `verified: true`
+when a link has been confirmed, matching Mastodon's `verifiedAt` on
+`PropertyValue` rows.
