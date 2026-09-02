@@ -1,0 +1,31 @@
+---
+name: activity-feed-group
+type: registry:ui
+title: Activity Feed Group
+description: Date-grouped section header for activity feeds.
+registryDependencies:
+  - separator
+files:
+  - path: activity-feed-group.tsx
+    type: registry:ui
+---
+
+A muted uppercase heading with a trailing rule, wrapping a list of feed entries.
+Use it inside [`activity-feed`](/blocks/activity-feed) or build your own grouped layout.
+
+```tsx
+import { ActivityFeedGroup } from "@/components/ui/activity-feed-group";
+import { ActivityFeedItem } from "@/components/ui/activity-feed-item";
+
+<ActivityFeedGroup label="Today">
+  <ol className="m-0 flex list-none flex-col gap-3 p-0">
+    {entries.map((entry) => (
+      <li key={entry.activity.id}>
+        <ActivityFeedItem entry={entry} viewer={viewer} />
+      </li>
+    ))}
+  </ol>
+</ActivityFeedGroup>;
+```
+
+The `label` becomes both the visible heading and the section's `aria-label`.

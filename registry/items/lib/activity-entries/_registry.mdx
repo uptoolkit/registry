@@ -1,0 +1,62 @@
+---
+name: activity-entries
+type: registry:lib
+title: Activity Entries
+description: ActivityPub feed entry vocabulary, classification, filtering, and grouping helpers.
+localRegistryDependencies:
+  - activitypub
+  - social-sample-data
+files:
+  - path: activity-entries.ts
+    type: registry:lib
+---
+
+The classification layer between raw ActivityPub collections and feed UI. It maps
+`Create`, `Announce`, `Like`, `Follow`, and the rest of the ActivityStreams
+vocabulary into renderable `FeedEntry` rows, with optional filtering and
+date grouping.
+
+```ts
+import {
+  countFeedEntries,
+  filterFeedEntries,
+  getFeedEntryKind,
+  groupFeedEntries,
+  toFeedEntries,
+  toTimelineEntries,
+} from "@/lib/activity-entries";
+
+const entries = toFeedEntries(collection.orderedItems ?? []);
+const timeline = toTimelineEntries(entries); // Create and Announce only
+const today = groupFeedEntries(entries, { now: renderedAt, locale: "en" });
+```
+
+### Entry kinds
+
+| Activity                | Kind       |
+| ----------------------- | ---------- |
+| `Create`                | `post`     |
+| `Announce`              | `share`    |
+| `Like`, `EmojiReact`    | `reaction` |
+| `Follow`                | `follow`   |
+| `Add`                   | `album`    |
+| `Update`                | `profile`  |
+| `Join`                  | `join`     |
+| `Delete`                | `delete`   |
+
+### Wall context
+
+Pass a `subject` actor when you need visitor-post ribbons on a profile wall:
+
+```ts
+toFeedEntries(activities, { subject: owner });
+```
+
+`addressedToSubject` is `true` when a post is addressed to the subject by
+someone else — the same signal ActivityPub uses via `cc` and `audience`.
+
+### Filters
+
+`filterFeedEntries` and `countFeedEntries` power the filter tabs in
+[`activity-feed`](/blocks/activity-feed). `sampleActivityCollection` is a
+mixed `OrderedCollection` you can drop into previews or tests.

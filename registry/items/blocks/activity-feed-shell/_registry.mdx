@@ -1,0 +1,56 @@
+---
+name: activity-feed-shell
+type: registry:block
+title: Activity Feed Shell
+description: Three-column shell for activity feed pages with sidebar and rail slots.
+categories:
+  - layout
+registryDependencies:
+  - badge
+  - button
+  - input
+  - separator
+  - sheet
+localRegistryDependencies:
+  - activitypub
+  - social-sample-data
+  - actor-avatar
+files:
+  - path: activity-feed-shell.tsx
+    type: registry:block
+---
+
+A three-column layout for activity feed pages: a sticky left sidebar with the
+viewer identity and primary navigation, a centre column for the feed via
+`children`, and an optional right rail for notifications or suggestions. Under
+`lg` the sidebar collapses into a `Sheet`.
+
+```tsx
+import { ActivityFeedShell } from "@/components/activity-feed-shell";
+import { ActivityFeed } from "@/components/activity-feed";
+
+<ActivityFeedShell
+  viewer={viewer}
+  nav={[
+    { label: "Home", href: "/activity", active: true },
+    { label: "Explore", href: "/explore" },
+  ]}
+  sidebar={<ContactsList actors={contacts} />}
+  rail={<NotificationsPanel collection={inbox} viewer={viewer} />}
+  notificationsCount={unreadCount}
+  onSearch={(query) => router.push(`/search?q=${query}`)}
+>
+  <ActivityFeed viewer={viewer} collection={outbox} />
+</ActivityFeedShell>;
+```
+
+### Routing
+
+Nav items are plain anchors with an `active` flag, not a router `Link`. Swap the
+`<a>` in `nav.map` for your router's link component and drive `active` from the
+current route.
+
+### Slots
+
+`sidebar` renders below the nav in the left column. `rail` renders in the right
+column, visible from `xl` up. Both are optional.

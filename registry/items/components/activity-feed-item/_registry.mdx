@@ -1,0 +1,39 @@
+---
+name: activity-feed-item
+type: registry:ui
+title: Activity Feed Item
+description: Single ActivityPub activity row for timeline and full feeds.
+registryDependencies:
+  - card
+localRegistryDependencies:
+  - activitypub
+  - activity-entries
+  - actor-avatar
+  - post-card
+files:
+  - path: activity-feed-item.tsx
+    type: registry:ui
+---
+
+Renders one classified `FeedEntry`. `Create` and `Announce` activities
+become full [`post-card`](/components/post-card) rows; reactions, follows, albums, profile changes,
+group joins, and deletes collapse to a single attributed line with an icon badge.
+
+```tsx
+import { ActivityFeedItem } from "@/components/ui/activity-feed-item";
+import { toFeedEntries } from "@/lib/activity-entries";
+
+const [entry] = toFeedEntries(collection.orderedItems ?? []);
+
+<ActivityFeedItem
+  entry={entry}
+  viewer={viewer}
+  subject={owner}
+  onActivity={(activity) => postToOutbox(viewer, activity)}
+  onSelect={(entry) => navigate(getObjectId(entry.object))}
+/>;
+```
+
+Pass `children` to render a comment thread or other content below post cards.
+`subject` enables the "wrote to their feed" ribbon when
+`entry.addressedToSubject` is true.

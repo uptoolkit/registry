@@ -66,7 +66,7 @@ Edit `registry/config.ts`.
 export const registryConfig = {
   name: "_cn",
   registryName: "_cn",
-  namespace: "@_cn",
+  namespace: "@uptoolkit",
   description: "Installable components for your project.",
   homepage: "https://ui.uptoolkit.com",
   repositoryUrl: "https://github.com/jakejarvis/_cn",

@@ -1,0 +1,69 @@
+---
+name: activity-feed
+type: registry:block
+title: Activity Feed
+description: Composable ActivityPub feed block with timeline and full activity modes.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - separator
+  - tabs
+localRegistryDependencies:
+  - activitypub
+  - activity-entries
+  - schema-org
+  - social-sample-data
+  - json-ld
+  - activity-feed-group
+  - activity-feed-item
+  - post-composer
+  - comment-thread
+files:
+  - path: activity-feed.tsx
+    type: registry:block
+---
+
+The feed. Hand it an `OrderedCollection` from an `inbox` or `outbox` and it
+classifies each activity, optionally filters and groups them, and renders post
+cards or collapsed rows.
+
+```tsx
+import { ActivityFeed } from "@/components/activity-feed";
+
+const collection = await fetchOutbox(viewer);
+
+<ActivityFeed
+  viewer={viewer}
+  collection={collection}
+  variant="full"
+  showComments
+  onPublish={(activity) => postToOutbox(viewer, activity)}
+  onLoadMore={(next) => fetchPage(next)}
+  onActivity={(activity) => postToOutbox(viewer, activity)}
+/>;
+```
+
+### Variants
+
+- `timeline` — only `Create` and `Announce` entries, no filter row. A drop-in
+  replacement for a plain home feed.
+- `full` — the whole ActivityPub vocabulary with filter tabs and date grouping.
+
+### Wall context
+
+Pass `context={{ subject: owner }}` on a profile wall so visitor posts show the
+"wrote to their feed" ribbon.
+
+### Pagination
+
+When the collection has a `next` URL, a "Load older activity" button appears
+and passes that URL to `onLoadMore`. Merge the page into your collection state
+and pass it back down.
+
+### Structured data
+
+The block emits one Schema.org `CollectionPage` wrapping an `ItemList` of
+postings. Without a `collection` it renders
+[`activity-entries`](/utilities/activity-entries) sample data so it works the
+moment it is installed.

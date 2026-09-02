@@ -1,0 +1,55 @@
+---
+name: activity-feed-page
+type: registry:page
+title: Activity Feed Page
+description: Activity feed page with shell, filters, composer, and notifications rail.
+categories:
+  - activitypub
+localRegistryDependencies:
+  - activitypub
+  - activity-entries
+  - schema-org
+  - social-sample-data
+  - activity-feed
+  - activity-feed-shell
+  - actor-grid
+  - notifications-panel
+  - json-ld
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/activity/page.tsx
+  - path: activity-feed-page-content.tsx
+    type: registry:component
+---
+
+A complete activity feed page: shell, full activity stream with filters and date
+grouping, contacts in the sidebar, and notifications plus suggestions in the
+rail.
+
+```bash
+npx shadcn@latest add @uptoolkit/activity-feed-page
+```
+
+Installs to `app/activity/page.tsx` along with every block, component, and
+helper it uses.
+
+```tsx
+import { parseHandle, buildWebFingerUrl } from "@/lib/activitypub";
+
+const [outbox, inbox, contacts, suggestions] = await Promise.all([
+  fetchOutbox(viewer),
+  fetchInbox(viewer),
+  fetchFollowing(viewer),
+  fetchSuggestions(viewer),
+]);
+
+// ...pass each into ActivityFeedShell, ActivityFeed, and ActorGrid
+```
+
+The page emits a Schema.org `Person` node for the signed-in actor, and the feed
+inside emits its own `CollectionPage`.
+
+For a plain post timeline without the full activity vocabulary, set
+`variant="timeline"` on [`activity-feed`](/blocks/activity-feed). For a profile wall with visitor
+posts, see [`wall-page`](/pages/wall-page).
