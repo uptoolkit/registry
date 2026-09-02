@@ -1,0 +1,69 @@
+---
+name: dashboard-shell
+type: registry:block
+title: Dashboard Shell
+description: Sidebar and header app shell for a dashboard, with grouped nav, a workspace switcher, and a content slot.
+categories:
+  - layout
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - dropdown-menu
+  - input
+  - sheet
+files:
+  - path: dashboard-shell.tsx
+    type: registry:block
+---
+
+A grouped sidebar with a workspace switcher on the left, a header with search, create, messages,
+notifications, a language switcher, and an account menu on top, wrapped around a `children` content
+slot. The sidebar collapses into a `Sheet` under `lg` and can be toggled away above it.
+
+```tsx
+import { DashboardShell } from "@/components/dashboard-shell";
+
+<DashboardShell
+  workspace={{ id: "my-space", name: "My Space", meta: "Personal" }}
+  workspaces={workspaces}
+  user={viewer}
+  nav={[
+    {
+      label: "Explore",
+      items: [
+        { label: "Dashboard", href: "/dashboard", icon: IconLayoutGrid, active: true },
+        { label: "Marketplace", href: "/marketplace", icon: IconBuildingStore },
+      ],
+    },
+  ]}
+  messagesCount={1}
+  notificationsCount={4}
+  onSearch={(query) => router.navigate({ to: "/search", search: { q: query } })}
+  onSignOut={() => signOut()}
+>
+  {children}
+</DashboardShell>;
+```
+
+### Routing
+
+Nav items and group headings are plain data: each item is an `<a>` with an `active` flag, not a
+router `Link`. Swap the anchor inside `group.items.map` for your router's link component and drive
+`active` from the current route.
+
+### Sidebar state
+
+The sidebar is uncontrolled by default — pass `defaultSidebarOpen={false}` to start collapsed, or
+pass `sidebarOpen` and `onSidebarOpenChange` to persist it in a cookie or user preference so the
+choice survives a reload. Under `lg` the toggle is replaced by a `Sheet`, which closes itself when a
+nav item is picked.
+
+### Header actions
+
+Every header affordance is opt-in: the search field, create button, messages button, and language
+switcher only render when their prop is passed (`onSearch`, `onCreateClick`, `onMessagesClick`,
+`locales`), so routes that don't need one can drop the prop instead of hiding an empty control.
+`searchShortcut` is display-only — bind the actual hotkey wherever your command palette lives.
+
+The floating support button in the bottom corner renders only when `onSupportClick` is passed.

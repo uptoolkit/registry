@@ -1,0 +1,71 @@
+---
+name: dashboard-page
+type: registry:page
+title: Dashboard
+description: Default dashboard page with quick actions, stat cards, a new members carousel, and an activity feed.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - card
+  - tabs
+localRegistryDependencies:
+  - dashboard-shell
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/dashboard/page.tsx
+  - path: dashboard-panels.tsx
+    type: registry:component
+  - path: dashboard-data.ts
+    type: registry:lib
+---
+
+The default landing page for a signed-in workspace, rendered inside
+[`dashboard-shell`](/layouts/dashboard-shell): a quick actions card, a row of stat counters, a paged
+carousel of new members, and an activity feed with category tabs beside a community card.
+
+```sh
+npx shadcn@latest add @uptoolkit/dashboard-page
+```
+
+Installs `app/dashboard/page.tsx` plus the `DashboardChrome`, `NewMembersCarousel`, and
+`ActivityFeed` client components, the `dashboard-data` fixtures, and the shell itself.
+
+### Wiring it up
+
+`page.tsx` is a server component. It reads the fixtures in `dashboard-data.ts` and lays out the
+sections, so swapping in real data is one file:
+
+```tsx
+export default async function Page() {
+  const [stats, members, activity] = await Promise.all([
+    fetchWorkspaceStats(),
+    fetchNewMembers({ limit: 6 }),
+    fetchActivity({ limit: 20 }),
+  ]);
+
+  // ...pass each into the sections in place of dashboardStats, dashboardMembers, dashboardActivity
+}
+```
+
+Icons stay out of the data that crosses into the client: activity rows carry a `kind` string and
+`dashboard-panels.tsx` maps it to an icon, so the entries remain serializable. Keep that split when
+you add a category.
+
+### The shell boundary
+
+The shell takes callbacks, so it is mounted from `DashboardChrome` rather than from the page. That
+keeps the page a server component. `DashboardChrome`'s handlers are stubs — point `onSearch` at your
+command palette, `onCreateClick` at your create menu, and `onLocaleChange` at wherever the locale is
+persisted.
+
+If every route under `/dashboard` shares the shell, lift `DashboardChrome` into
+`app/dashboard/layout.tsx` and let this page return only its sections.
+
+### Sections
+
+`dashboard-data.ts` drives all four sections, and each one takes its records as a prop, so dropping
+a section means deleting its element from `page.tsx` and its fixture. Quick action tiles and stat
+chips pick their tint from a `tone` key mapped to classes at the top of `page.tsx` — add a tone by
+adding one entry to each of the two records.
