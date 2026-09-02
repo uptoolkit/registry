@@ -1,0 +1,70 @@
+---
+name: crud-data-table
+type: registry:block
+title: CRUD Data Table
+description: Full TanStack CRUD data table with search, filters, multiselect, column visibility, sorting, and API Platform helpers.
+registryDependencies:
+  - table
+  - button
+  - checkbox
+  - dropdown-menu
+  - input
+  - label
+  - badge
+  - select
+  - popover
+localRegistryDependencies:
+  - api-platform-crud
+  - data-table-helpers
+  - use-crud-data-table
+  - data-table
+files:
+  - path: crud-data-table.tsx
+    type: registry:block
+  - path: crud-sample-data.tsx
+    type: registry:lib
+---
+
+A batteries-included admin table for API Platform resources. Ships with search,
+customizable column filters, row multiselect, column visibility, sorting, and
+pagination. In server mode it builds query strings compatible with API
+Platform's default `page`, `itemsPerPage`, `order[field]`, filter, and `search`
+parameters.
+
+```bash
+npx shadcn@latest add @_cn/crud-data-table
+```
+
+```tsx
+import { CrudDataTable } from "@/components/crud-data-table";
+
+<CrudDataTable
+  endpoint="/api/books"
+  manual
+  heading="Books"
+  onCreate={() => router.push("/books/new")}
+  onEdit={(book) => router.push(`/books/${book.id}`)}
+  onDelete={(book) => deleteBook(book["@id"])}
+  onBulkDelete={(rows) => deleteBooks(rows.map((row) => row["@id"]))}
+  onQueryChange={(query) => console.log(buildApiPlatformQuery(query).toString())}
+/>;
+```
+
+### Client mode
+
+Omit `endpoint` to run against local rows — useful for Storybook-style previews
+or optimistic client CRUD:
+
+```tsx
+<CrudDataTable data={books} columns={bookColumns} />
+```
+
+### Column filters
+
+Define filters on `columnDef.meta.filter`. Supported types: `text`, `select`,
+`multiselect`, `boolean`. Each maps to API Platform filter operators (`contains`,
+`in`, `eq`, and so on).
+
+### Dependencies
+
+Requires `@tanstack/react-table` in the host application.

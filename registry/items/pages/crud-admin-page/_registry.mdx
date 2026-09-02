@@ -1,0 +1,32 @@
+---
+name: crud-admin-page
+type: registry:page
+title: CRUD Admin Page
+description: Admin page with a full API Platform-ready CRUD data table.
+localRegistryDependencies:
+  - crud-data-table
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/admin/page.tsx
+  - path: crud-admin-content.tsx
+    type: registry:component
+---
+
+Admin page built around [`crud-data-table`](/blocks/crud-data-table).
+
+```bash
+npx shadcn@latest add @_cn/crud-admin-page
+```
+
+Installs to `app/admin/page.tsx` with the table block, hook, helpers, and sample
+book columns.
+
+Point the table at a live API Platform collection by editing
+`CrudAdminPageContent`:
+
+```tsx
+<CrudDataTable endpoint="/api/books" manual heading="Books" />
+```
+
+The page stays a server component; only the table runs on the client.
