@@ -1,0 +1,53 @@
+---
+name: person-page
+type: registry:page
+title: Person Page
+description: Person detail page with bio, contact details, and Schema.org Person structured data.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - card
+  - separator
+localRegistryDependencies:
+  - json-ld
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/person/page.tsx
+  - path: person-data.ts
+    type: registry:lib
+---
+
+A bio header, an experience timeline, and a details sidebar with profile links and publications. The
+page emits one Schema.org `Person` node built straight from the same record the page renders, so
+there is nothing to keep in sync.
+
+```sh
+npx shadcn@latest add @uptoolkit/person-page
+```
+
+Installs `app/person/page.tsx` and the `person-data` fixtures.
+
+### Wiring it to a real person
+
+Move the page to a dynamic segment and resolve the record from the route:
+
+```tsx
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const person = await db.person.findUniqueOrThrow({ where: { slug } });
+
+  // ...pass person, experience, and publications into the same sections
+}
+```
+
+### Structured data
+
+`toPersonJsonLd` in `page.tsx` maps the `PersonProfile` record directly onto
+[`schema.org/Person`](https://schema.org/Person): `jobTitle`, `worksFor`, `sameAs`, and `knowsAbout`
+all come from fields the header and sidebar already render. Swap the inline mapper for the shared
+[`schema-org`](/utilities/schema-org) helpers if this page also needs to represent a fediverse actor.
+
+For an organization-scale version of the same idea, see
+[`organization-page`](/pages/organization-page).

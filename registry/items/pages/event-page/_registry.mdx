@@ -1,0 +1,54 @@
+---
+name: event-page
+type: registry:page
+title: Event Page
+description: Event detail page with schedule, venue, and Schema.org Event structured data.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - card
+  - separator
+localRegistryDependencies:
+  - json-ld
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/event/page.tsx
+  - path: event-data.ts
+    type: registry:lib
+---
+
+A banner header with a register CTA, a schedule timeline joined to a speaker list, and a details rail
+with venue, capacity, and price. The page emits one Schema.org `Event` node with `offers` built from
+the same price and availability the details rail shows.
+
+```sh
+npx shadcn@latest add @uptoolkit/event-page
+```
+
+Installs `app/event/page.tsx` and the `event-data` fixtures.
+
+### Wiring it to a real event
+
+Move the page to a dynamic segment and resolve the record from the route:
+
+```tsx
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const event = await db.event.findUniqueOrThrow({ where: { slug } });
+
+  // ...pass event, schedule, and speakers into the same sections
+}
+```
+
+### Structured data
+
+`toEventJsonLd` in `page.tsx` maps the `Event` record onto
+[`schema.org/Event`](https://schema.org/Event): `status` becomes `eventStatus`, `attendanceMode`
+becomes `eventAttendanceMode`, and `price`/`availability` become the nested `offers.Offer`. Swap in
+`InPerson`, `Online`, or `Mixed` handling on the client once registration opens and seats can sell
+out live.
+
+For the people speaking at the event, see [`person-page`](/pages/person-page); for the organizer, see
+[`organization-page`](/pages/organization-page).

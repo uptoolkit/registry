@@ -1,0 +1,50 @@
+---
+name: organization-page
+type: registry:page
+title: Organization Page
+description: Organization detail page with overview, locations, team, and Schema.org Organization structured data.
+registryDependencies:
+  - avatar
+  - badge
+  - button
+  - card
+localRegistryDependencies:
+  - json-ld
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/organization/page.tsx
+  - path: organization-data.ts
+    type: registry:lib
+---
+
+A header with logo and stats, an about section, a team grid, and a sidebar with contact details and
+every office location. The page emits one Schema.org `Organization` node whose `location` array comes
+straight from the same records the sidebar renders.
+
+```sh
+npx shadcn@latest add @uptoolkit/organization-page
+```
+
+Installs `app/organization/page.tsx` and the `organization-data` fixtures.
+
+### Wiring it to a real company record
+
+Move the page to a dynamic segment and resolve the record from the route:
+
+```tsx
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const organization = await db.organization.findUniqueOrThrow({ where: { slug } });
+
+  // ...pass organization, locations, and team into the same sections
+}
+```
+
+### Structured data
+
+`toOrganizationJsonLd` in `page.tsx` maps the `Organization` record onto
+[`schema.org/Organization`](https://schema.org/Organization), with each `OrganizationLocation` turned
+into a `Place` under `location` and `email`/`telephone` folded into one `contactPoint`.
+
+For a single team member's own page, see [`person-page`](/pages/person-page).

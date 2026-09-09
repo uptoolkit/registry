@@ -1,0 +1,50 @@
+---
+name: product-page
+type: registry:page
+title: Product Page
+description: Product detail page with specs, pricing, and Schema.org Product structured data.
+registryDependencies:
+  - badge
+  - button
+  - card
+  - separator
+localRegistryDependencies:
+  - json-ld
+files:
+  - path: page.tsx
+    type: registry:page
+    target: app/product/page.tsx
+  - path: product-data.ts
+    type: registry:lib
+---
+
+An image, price, and availability summary, a specifications sidebar, and a reviews list. The page
+emits one Schema.org `Product` node whose `aggregateRating` and `review` array come from the same
+review records the page renders, so the two never drift apart.
+
+```sh
+npx shadcn@latest add @uptoolkit/product-page
+```
+
+Installs `app/product/page.tsx` and the `product-data` fixtures.
+
+### Wiring it to a real item
+
+Move the page to a dynamic segment and resolve the record from the route:
+
+```tsx
+export default async function Page({ params }: { params: Promise<{ sku: string }> }) {
+  const { sku } = await params;
+  const product = await db.product.findUniqueOrThrow({ where: { sku } });
+
+  // ...pass product, specs, and reviews into the same sections
+}
+```
+
+### Structured data
+
+`toProductJsonLd` in `page.tsx` maps the `Product` record onto
+[`schema.org/Product`](https://schema.org/Product), including the `material`, `color`, and `weight`
+properties for a physical item, an `Offer` for price and availability, and an `AggregateRating`
+computed from `reviewCount`/`ratingValue` on the record itself rather than recomputed from the sample
+reviews, so it still works once reviews are paginated separately from the record.
