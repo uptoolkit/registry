@@ -1,0 +1,50 @@
+---
+name: api-platform-crud
+type: registry:lib
+title: API Platform CRUD
+description: Parse Hydra collections and build API Platform pagination, order, search, and filter query strings.
+files:
+  - path: api-platform-crud.ts
+    type: registry:lib
+---
+
+Helpers for [API Platform](https://api-platform.com/) collection endpoints. Parses
+`hydra:member` / `hydra:totalItems` responses and builds query strings from
+table state.
+
+```ts
+import {
+  buildApiPlatformQuery,
+  fetchApiPlatformCollection,
+  parseApiPlatformCollection,
+  withApiPlatformQuery,
+} from "@/lib/api-platform-crud";
+
+const query = buildApiPlatformQuery({
+  page: 1,
+  itemsPerPage: 20,
+  sort: [{ id: "title", desc: false }],
+  filters: [{ id: "status", operator: "in", value: ["published"] }],
+  search: "dune",
+});
+// page=1&itemsPerPage=20&order[title]=asc&status[]=published&search=dune
+
+const collection = await fetchApiPlatformCollection<Book>("/api/books", {
+  page: 2,
+  itemsPerPage: 10,
+  sort: [],
+  filters: [],
+});
+```
+
+### Defaults
+
+| Parameter | Query key |
+| --------- | --------- |
+| Page | `page` |
+| Page size | `itemsPerPage` |
+| Sort | `order[field]=asc\|desc` |
+| Search | `search` |
+
+Override names via `ApiPlatformCrudConfig` when your API uses custom parameter
+names.

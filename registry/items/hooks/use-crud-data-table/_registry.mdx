@@ -1,0 +1,31 @@
+---
+name: use-crud-data-table
+type: registry:hook
+title: useCrudDataTable
+description: TanStack Table hook that maps sorting, filters, search, and pagination to API Platform queries.
+localRegistryDependencies:
+  - api-platform-crud
+  - data-table-helpers
+files:
+  - path: use-crud-data-table.ts
+    type: registry:hook
+---
+
+Wraps `useReactTable` with row selection, column visibility, global search, and
+API Platform query mapping.
+
+```tsx
+import { useCrudDataTable } from "@/hooks/use-crud-data-table";
+
+const { table, query } = useCrudDataTable({
+  columns,
+  data: books,
+  manual: true,
+  rowCount: totalItems,
+  onQueryChange: (query) => fetchBooks(query),
+});
+```
+
+Set `manual: true` when the collection is fetched from an API Platform endpoint.
+`query` always reflects the current table state and can be passed to
+`buildApiPlatformQuery` or `fetchApiPlatformCollection`.

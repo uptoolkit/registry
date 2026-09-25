@@ -1,0 +1,54 @@
+---
+name: data-table
+type: registry:ui
+title: Data Table
+description: TanStack Table shell with toolbar, pagination, sortable headers, and column visibility.
+registryDependencies:
+  - table
+  - button
+  - checkbox
+  - dropdown-menu
+  - input
+  - label
+  - badge
+  - select
+  - popover
+localRegistryDependencies:
+  - data-table-helpers
+files:
+  - path: data-table.tsx
+    type: registry:ui
+  - path: data-table-toolbar.tsx
+    type: registry:ui
+  - path: data-table-pagination.tsx
+    type: registry:ui
+  - path: data-table-column-header.tsx
+    type: registry:ui
+---
+
+Composable TanStack Table primitives for CRUD admin UIs.
+
+```tsx
+import { DataTable } from "@/components/ui/data-table";
+import { DataTableToolbar } from "@/components/ui/data-table-toolbar";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { useCrudDataTable } from "@/hooks/use-crud-data-table";
+
+const { table } = useCrudDataTable({ columns, data });
+
+<>
+  <DataTableToolbar table={table} />
+  <DataTable table={table} />
+  <DataTablePagination table={table} />
+</>;
+```
+
+`DataTableToolbar` includes global search, per-column filters, and a column
+visibility menu. `DataTableColumnHeader` adds sort and hide controls to each
+sortable column.
+
+Install `@tanstack/react-table` in your app:
+
+```bash
+npm install @tanstack/react-table
+```

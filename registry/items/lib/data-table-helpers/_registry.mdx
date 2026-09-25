@@ -1,0 +1,40 @@
+---
+name: data-table-helpers
+type: registry:lib
+title: Data Table Helpers
+description: Shared TanStack Table types and API Platform query mapping helpers.
+localRegistryDependencies:
+  - api-platform-crud
+files:
+  - path: data-table.ts
+    type: registry:lib
+---
+
+Types and helpers shared by the data table components and
+[`use-crud-data-table`](/hooks/use-crud-data-table).
+
+```ts
+import { dataTableStateToCrudQuery, defaultDataTableState } from "@/lib/data-table-helpers";
+
+const query = dataTableStateToCrudQuery(state, columns);
+```
+
+### Column meta
+
+Attach filters and labels through `columnDef.meta`:
+
+```ts
+meta: {
+  label: "Status",
+  filter: {
+    type: "multiselect",
+    operator: "in",
+    options: [
+      { label: "Draft", value: "draft" },
+      { label: "Published", value: "published" },
+    ],
+  },
+}
+```
+
+Supported filter types: `text`, `select`, `multiselect`, `boolean`, `date`.
