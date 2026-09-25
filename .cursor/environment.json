@@ -1,0 +1,11 @@
+{
+  "name": "uptoolkit registry",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "export PATH=\"$HOME/.bun/bin:$HOME/.local/share/vite-plus/bin:$PATH\" && vp dev --host"
+    }
+  ]
+}
